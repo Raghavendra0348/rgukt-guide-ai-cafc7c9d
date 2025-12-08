@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, MessageCircle, FileText, LayoutDashboard, LogIn, LogOut, User, BookOpen } from "lucide-react";
+import { Menu, X, MessageCircle, FileText, LayoutDashboard, LogIn, LogOut, User, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { RGUKTLogo } from "@/components/RGUKTLogo";
@@ -23,7 +23,7 @@ export function Navbar() {
     { href: "/chat", label: "Chat", icon: MessageCircle },
     { href: "/complaints", label: "Complaints", icon: FileText },
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/blog", label: "Blog", icon: BookOpen },
+    { href: "/about", label: "About Us", icon: Info },
     ...(isAdmin ? [{ href: "/admin", label: "Admin", icon: LayoutDashboard }] : []),
   ];
 
@@ -101,7 +101,7 @@ export function Navbar() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Link to="/auth">
+            <Link to="/student-auth">
               <Button variant="hero" size="sm" className="gap-2">
                 <LogIn className="w-4 h-4" />
                 Sign In
@@ -162,7 +162,7 @@ export function Navbar() {
                 </Button>
               </>
             ) : (
-              <Link to="/auth" onClick={() => setIsOpen(false)}>
+              <Link to="/student-auth" onClick={() => setIsOpen(false)}>
                 <Button variant="hero" className="w-full gap-2 mt-2">
                   <LogIn className="w-4 h-4" />
                   Sign In

@@ -234,7 +234,7 @@ export default function AdminAuth() {
               <div className="mt-6 pt-4 border-t border-[hsl(220,20%,20%)]">
                 <p className="text-xs text-center text-[hsl(220,15%,50%)]">
                   Are you a student?{" "}
-                  <Link to="/auth" className="text-primary font-medium hover:underline">
+                  <Link to="/student-auth" className="text-primary font-medium hover:underline">
                     Student Portal
                   </Link>
                 </p>

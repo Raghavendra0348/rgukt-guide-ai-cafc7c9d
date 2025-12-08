@@ -197,48 +197,46 @@ export default function Chat() {
             </div>
           </div>
 
-          {/* Content */}
-          <div className="flex-1 overflow-y-auto p-5 space-y-5">
-            {/* Robot Image */}
-            <div className="relative group">
-              <div className="bg-gradient-to-br from-purple-100 via-white to-blue-100 rounded-2xl p-5 border-2 border-purple-200 shadow-lg hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02]">
+          {/* Content - Centered Robot Only */}
+          <div className="flex-1 overflow-y-auto flex items-center justify-center p-8">
+            {/* Robot Image - Centered */}
+            <div className="relative max-w-[260px]">
+              <div className="bg-gradient-to-br from-purple-100 via-white to-blue-100 rounded-3xl p-6 border-2 border-purple-200 shadow-2xl">
                 <img
                   src="/robot_logo.jpeg"
                   alt="Medha AI Assistant"
-                  className="w-full h-auto object-contain transition-transform duration-300"
+                  className="w-full h-auto object-contain"
                 />
               </div>
               
               {/* Animated Badge */}
-              <div className="absolute -top-2 -right-2 bg-gradient-to-r from-purple-600 via-purple-500 to-blue-600 text-white px-3 py-1.5 rounded-full shadow-xl text-xs font-bold flex items-center gap-1.5 animate-pulse">
-                <Sparkles className="w-3 h-3" />
+              <div className="absolute -top-3 -right-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-2 rounded-full shadow-xl text-sm font-bold flex items-center gap-2 animate-pulse">
+                <Sparkles className="w-4 h-4" />
                 AI Powered
               </div>
 
               {/* Corner decorations */}
-              <div className="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2 border-purple-400 rounded-tl-lg"></div>
-              <div className="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2 border-blue-400 rounded-br-lg"></div>
+              <div className="absolute top-3 left-3 w-6 h-6 border-t-3 border-l-3 border-purple-400 rounded-tl-xl"></div>
+              <div className="absolute bottom-3 right-3 w-6 h-6 border-b-3 border-r-3 border-blue-400 rounded-br-xl"></div>
             </div>
+          </div>
 
-            {/* Description Card */}
-            <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl p-4 border border-purple-200 shadow-sm">
-              <h4 className="text-base font-bold text-gray-800 mb-2 flex items-center gap-2">
-                <span className="w-1 h-5 bg-gradient-to-b from-purple-500 to-blue-500 rounded-full"></span>
-                Your Campus Assistant
-              </h4>
-              <p className="text-sm text-gray-700 leading-relaxed">
-                Get instant, accurate answers about academics, examinations, fees, hostel facilities, library resources, and administrative procedures.
+          {/* Footer */}
+          <div className="border-t-2 border-purple-200 bg-gradient-to-r from-purple-100 via-purple-50 to-blue-50 px-5 py-4">
+            <div className="text-center space-y-1">
+              <p className="text-xs font-semibold text-gray-700">
+                Powered by Google Gemini AI
+              </p>
+              <p className="text-[10px] text-gray-500">
+                RGUKT RK Valley • Campus Assistant
               </p>
             </div>
-
-            {/* Features Grid */}
-            <div className="space-y-3">
-              <h5 className="text-xs font-bold text-gray-700 uppercase tracking-wider flex items-center gap-2">
-                <span className="w-1 h-4 bg-gradient-to-b from-purple-500 to-blue-500 rounded-full"></span>
-                Key Features
-              </h5>
-              
-              <div className="grid grid-cols-1 gap-2.5">
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
                 <div className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200 hover:shadow-md transition-all cursor-pointer group">
                   <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
                     <BookOpen className="w-4 h-4 text-purple-600" />
@@ -299,10 +297,15 @@ export default function Chat() {
           </div>
 
           {/* Footer */}
-          <div className="border-t border-purple-100 bg-gradient-to-r from-purple-50/50 to-blue-50/50 px-4 py-3">
-            <p className="text-[10px] text-center text-gray-500">
-              Powered by Gemini AI
-            </p>
+          <div className="border-t-2 border-purple-200 bg-gradient-to-r from-purple-100 via-purple-50 to-blue-50 px-5 py-4">
+            <div className="text-center space-y-1">
+              <p className="text-xs font-semibold text-gray-700">
+                Powered by Google Gemini AI
+              </p>
+              <p className="text-[10px] text-gray-500">
+                RGUKT RK Valley • Campus Assistant
+              </p>
+            </div>
           </div>
         </div>
       </main>

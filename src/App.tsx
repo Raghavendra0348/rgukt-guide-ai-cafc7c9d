@@ -11,9 +11,7 @@ import Complaints from "./pages/Complaints";
 import Admin from "./pages/Admin";
 import StudentAuth from "./pages/StudentAuth";
 import AdminAuth from "./pages/AdminAuth";
-import NotFound from "./pages/NotFound";
-import Blog from "./pages/Blog";
-import BlogArticle from "./pages/BlogArticle";
+import AboutUs from "./pages/AboutUs";
 import Dashboard from "./pages/Dashboard";
 
 const queryClient = new QueryClient();
@@ -30,8 +28,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/student-auth" element={<StudentAuth />} />
             <Route path="/admin-auth" element={<AdminAuth />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/blog/:slug" element={<BlogArticle />} />
+            <Route path="/about" element={<AboutUs />} />
 
             {/* Protected routes - auth check happens inside component */}
             <Route path="/chat" element={<Chat />} />
@@ -39,8 +36,8 @@ const App = () => (
             <Route path="/admin" element={<Admin />} />
             <Route path="/dashboard" element={<Dashboard />} />
 
-            {/* Fallback route */}
-            <Route path="*" element={<NotFound />} />
+            {/* Redirect all unknown routes to home */}
+            <Route path="*" element={<Index />} />
           </Routes>
         </AuthProvider>
       </BrowserRouter>

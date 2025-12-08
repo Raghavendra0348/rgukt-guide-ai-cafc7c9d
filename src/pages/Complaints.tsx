@@ -24,7 +24,10 @@ import {
   Plus,
   User,
   Calendar,
-  MessageSquare
+  MessageSquare,
+  Upload,
+  X,
+  Image as ImageIcon
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
@@ -67,6 +70,28 @@ export default function Complaints() {
   });
   
   const [submitting, setSubmitting] = useState(false);
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+  
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+    
+    Array.from(files).forEach(file => {
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          if (e.target?.result) {
+            setUploadedImages(prev => [...prev, e.target!.result as string]);
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  };
+  
+  const removeImage = (index: number) => {
+    setUploadedImages(prev => prev.filter((_, i) => i !== index));
+  };
   
   // Mock complaints data
   const [complaints] = useState<Complaint[]>([
@@ -116,6 +141,7 @@ export default function Complaints() {
         category: "",
         priority: "medium",
       });
+      setUploadedImages([]);
       
       setSubmitting(false);
       setActiveTab("list");
@@ -129,12 +155,12 @@ export default function Complaints() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#2b2929] via-gray-900 to-[#2b2929] flex flex-col">
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 flex flex-col">
         <Navbar />
         <main className="flex-1 flex items-center justify-center">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto mb-4"></div>
-            <p className="text-gray-400">Loading...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading...</p>
           </div>
         </main>
         <Footer />
@@ -144,18 +170,18 @@ export default function Complaints() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#2b2929] via-gray-900 to-[#2b2929] flex flex-col">
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 flex flex-col">
         <Navbar />
         <main className="flex-1 flex items-center justify-center px-4">
-          <Card className="max-w-md w-full shadow-xl bg-gray-800 border-gray-700">
+          <Card className="max-w-md w-full shadow-xl bg-white border-purple-100">
             <CardContent className="pt-8 pb-8 text-center">
-              <div className="w-16 h-16 bg-purple-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <AlertCircle className="w-8 h-8 text-purple-500" />
+              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <AlertCircle className="w-8 h-8 text-purple-600" />
               </div>
-              <h2 className="text-2xl font-bold text-white mb-2">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
                 Authentication Required
               </h2>
-              <p className="text-gray-400 mb-6">
+              <p className="text-gray-600 mb-6">
                 Please sign in to submit and view complaints
               </p>
               <Button 
@@ -173,33 +199,33 @@ export default function Complaints() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#2b2929] via-gray-900 to-[#2b2929] flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 flex flex-col">
       <Navbar />
 
       <main className="flex-1 pt-24 pb-16 px-4">
         <div className="container mx-auto max-w-6xl">
           {/* Header */}
           <div className="mb-8">
-            <div className="inline-flex items-center gap-2 bg-purple-500/10 text-purple-400 px-4 py-2 rounded-full text-sm font-medium mb-4 border border-purple-500/20">
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700 px-4 py-2 rounded-full text-sm font-medium mb-4 border border-purple-200 shadow-sm">
               <FileText className="w-4 h-4" />
               Complaint Portal
             </div>
-            <h1 className="text-3xl font-bold text-white mb-2">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
               Submit & Track Complaints
             </h1>
-            <p className="text-gray-400">
+            <p className="text-gray-600">
               Report issues and track their resolution status effectively.
             </p>
           </div>
 
           {/* Tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full max-w-md grid-cols-2 bg-gray-800 border border-gray-700">
-              <TabsTrigger value="submit" className="data-[state=active]:bg-purple-600">
+            <TabsList className="grid w-full max-w-md grid-cols-2 bg-white border border-purple-200 shadow-sm">
+              <TabsTrigger value="submit" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-blue-600 data-[state=active]:text-white">
                 <Plus className="w-4 h-4 mr-2" />
                 Submit Complaint
               </TabsTrigger>
-              <TabsTrigger value="list" className="data-[state=active]:bg-purple-600">
+              <TabsTrigger value="list" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-blue-600 data-[state=active]:text-white">
                 <FileText className="w-4 h-4 mr-2" />
                 My Complaints
               </TabsTrigger>
@@ -207,80 +233,136 @@ export default function Complaints() {
 
             {/* Submit Complaint Tab */}
             <TabsContent value="submit" className="mt-6">
-              <Card className="bg-gray-800 border-gray-700">
+              <Card className="bg-white border-purple-100 shadow-lg">
                 <CardHeader>
-                  <CardTitle className="text-white">Submit a New Complaint</CardTitle>
-                  <CardDescription className="text-gray-400">
+                  <CardTitle className="text-gray-900">Submit a New Complaint</CardTitle>
+                  <CardDescription className="text-gray-600">
                     Fill out the form below to report an issue
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="space-y-2">
-                      <Label htmlFor="title" className="text-white">Title *</Label>
+                      <Label htmlFor="title" className="text-gray-700 font-medium">Title *</Label>
                       <Input
                         id="title"
                         placeholder="Brief description of the issue"
                         value={formData.title}
                         onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                        className="bg-gray-900 border-gray-700 text-white"
+                        className="bg-white border-gray-300 focus:border-purple-500 focus:ring-purple-500"
                         required
                       />
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="category" className="text-white">Category *</Label>
-                      <Select
-                        value={formData.category}
-                        onValueChange={(value) => setFormData({ ...formData, category: value })}
-                      >
-                        <SelectTrigger className="bg-gray-900 border-gray-700 text-white">
-                          <SelectValue placeholder="Select a category" />
-                        </SelectTrigger>
-                        <SelectContent className="bg-gray-900 border-gray-700">
-                          <SelectItem value="infrastructure">Infrastructure</SelectItem>
-                          <SelectItem value="academic">Academic</SelectItem>
-                          <SelectItem value="hostel">Hostel</SelectItem>
-                          <SelectItem value="mess">Mess</SelectItem>
-                          <SelectItem value="transport">Transport</SelectItem>
-                          <SelectItem value="other">Other</SelectItem>
-                        </SelectContent>
-                      </Select>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="category" className="text-gray-700 font-medium">Category *</Label>
+                        <Select
+                          value={formData.category}
+                          onValueChange={(value) => setFormData({ ...formData, category: value })}
+                        >
+                          <SelectTrigger className="bg-white border-gray-300 focus:border-purple-500 focus:ring-purple-500">
+                            <SelectValue placeholder="Select a category" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-white border-gray-200">
+                            <SelectItem value="infrastructure">🏗️ Infrastructure</SelectItem>
+                            <SelectItem value="academic">📚 Academic</SelectItem>
+                            <SelectItem value="hostel">🏠 Hostel</SelectItem>
+                            <SelectItem value="mess">🍽️ Mess</SelectItem>
+                            <SelectItem value="transport">🚌 Transport</SelectItem>
+                            <SelectItem value="other">📋 Other</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="priority" className="text-gray-700 font-medium">Priority</Label>
+                        <Select
+                          value={formData.priority}
+                          onValueChange={(value: any) => setFormData({ ...formData, priority: value })}
+                        >
+                          <SelectTrigger className="bg-white border-gray-300 focus:border-purple-500 focus:ring-purple-500">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="bg-white border-gray-200">
+                            <SelectItem value="low">🟢 Low</SelectItem>
+                            <SelectItem value="medium">🟡 Medium</SelectItem>
+                            <SelectItem value="high">🔴 High</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="priority" className="text-white">Priority</Label>
-                      <Select
-                        value={formData.priority}
-                        onValueChange={(value: any) => setFormData({ ...formData, priority: value })}
-                      >
-                        <SelectTrigger className="bg-gray-900 border-gray-700 text-white">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className="bg-gray-900 border-gray-700">
-                          <SelectItem value="low">Low</SelectItem>
-                          <SelectItem value="medium">Medium</SelectItem>
-                          <SelectItem value="high">High</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="description" className="text-white">Description *</Label>
+                      <Label htmlFor="description" className="text-gray-700 font-medium">Description *</Label>
                       <Textarea
                         id="description"
                         placeholder="Provide detailed information about the issue..."
                         value={formData.description}
                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                        className="bg-gray-900 border-gray-700 text-white min-h-[150px]"
+                        className="bg-white border-gray-300 focus:border-purple-500 focus:ring-purple-500 min-h-[150px]"
                         required
                       />
+                    </div>
+
+                    {/* Image Upload Section */}
+                    <div className="space-y-2">
+                      <Label className="text-gray-700 font-medium">Attach Images (Optional)</Label>
+                      <div className="border-2 border-dashed border-purple-300 rounded-lg p-6 bg-purple-50/50 hover:bg-purple-50 transition-colors">
+                        <input
+                          type="file"
+                          id="image-upload"
+                          accept="image/*"
+                          multiple
+                          onChange={handleImageUpload}
+                          className="hidden"
+                        />
+                        <label
+                          htmlFor="image-upload"
+                          className="flex flex-col items-center justify-center cursor-pointer"
+                        >
+                          <div className="w-12 h-12 bg-gradient-to-br from-purple-100 to-blue-100 rounded-full flex items-center justify-center mb-3">
+                            <Upload className="w-6 h-6 text-purple-600" />
+                          </div>
+                          <p className="text-sm font-medium text-gray-700 mb-1">
+                            Click to upload images
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            PNG, JPG, GIF up to 10MB
+                          </p>
+                        </label>
+                      </div>
+
+                      {/* Image Preview Grid */}
+                      {uploadedImages.length > 0 && (
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                          {uploadedImages.map((image, index) => (
+                            <div key={index} className="relative group">
+                              <img
+                                src={image}
+                                alt={`Upload ${index + 1}`}
+                                className="w-full h-32 object-cover rounded-lg border-2 border-purple-200 shadow-sm"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => removeImage(index)}
+                                className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                              >
+                                <X className="w-4 h-4" />
+                              </button>
+                              <div className="absolute bottom-2 left-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-xs font-medium text-gray-700">
+                                Image {index + 1}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
 
                     <Button
                       type="submit"
                       disabled={submitting}
-                      className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+                      className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all"
                     >
                       {submitting ? (
                         <>
@@ -303,14 +385,18 @@ export default function Complaints() {
             <TabsContent value="list" className="mt-6">
               <div className="space-y-4">
                 {complaints.length === 0 ? (
-                  <Card className="bg-gray-800 border-gray-700">
+                  <Card className="bg-white border-purple-100 shadow-lg">
                     <CardContent className="pt-12 pb-12 text-center">
-                      <FileText className="w-12 h-12 mx-auto text-gray-600 mb-4" />
-                      <p className="text-gray-400">No complaints found</p>
+                      <div className="w-20 h-20 bg-gradient-to-br from-purple-100 to-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <FileText className="w-10 h-10 text-purple-600" />
+                      </div>
+                      <p className="text-gray-600 text-lg mb-2">No complaints found</p>
+                      <p className="text-gray-500 text-sm mb-6">Start by submitting your first complaint</p>
                       <Button
                         onClick={() => setActiveTab("submit")}
-                        className="mt-4 bg-gradient-to-r from-purple-600 to-blue-600"
+                        className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-lg"
                       >
+                        <Plus className="w-4 h-4 mr-2" />
                         Submit Your First Complaint
                       </Button>
                     </CardContent>
@@ -324,27 +410,27 @@ export default function Complaints() {
                     return (
                       <Card
                         key={complaint.id}
-                        className="bg-gray-800 border-gray-700 hover:border-purple-500/50 transition-all"
+                        className="bg-white border-purple-100 hover:border-purple-300 hover:shadow-xl transition-all shadow-md"
                       >
                         <CardContent className="pt-6">
                           <div className="flex items-start justify-between mb-4">
                             <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-3">
-                                <Badge variant="outline" className={statusInfo.color}>
+                              <div className="flex items-center flex-wrap gap-2 mb-3">
+                                <Badge variant="outline" className={statusInfo.color + " border-2"}>
                                   <StatusIcon className="w-3 h-3 mr-1" />
                                   {statusInfo.label}
                                 </Badge>
-                                <Badge className={priorityInfo.color}>
+                                <Badge className={priorityInfo.color + " font-medium"}>
                                   {priorityInfo.label}
                                 </Badge>
-                                <Badge variant="secondary" className="bg-gray-700 text-gray-300">
+                                <Badge variant="secondary" className="bg-purple-100 text-purple-700 border border-purple-200">
                                   {complaint.category}
                                 </Badge>
                               </div>
-                              <h3 className="text-lg font-semibold text-white mb-2">
+                              <h3 className="text-lg font-semibold text-gray-900 mb-2">
                                 {complaint.title}
                               </h3>
-                              <p className="text-sm text-gray-400 mb-3">
+                              <p className="text-sm text-gray-600 mb-3 leading-relaxed">
                                 {complaint.description}
                               </p>
                               <div className="flex items-center gap-4 text-xs text-gray-500">
@@ -361,14 +447,16 @@ export default function Complaints() {
                           </div>
 
                           {complaint.admin_response && (
-                            <div className="mt-4 pt-4 border-t border-gray-700">
-                              <div className="flex items-start gap-2">
-                                <MessageSquare className="w-4 h-4 text-purple-400 mt-1" />
-                                <div>
-                                  <p className="text-xs font-semibold text-purple-400 mb-1">
+                            <div className="mt-4 pt-4 border-t border-purple-100 bg-gradient-to-r from-purple-50 to-blue-50 -mx-6 -mb-6 px-6 py-4 rounded-b-lg">
+                              <div className="flex items-start gap-3">
+                                <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                                  <MessageSquare className="w-4 h-4 text-white" />
+                                </div>
+                                <div className="flex-1">
+                                  <p className="text-xs font-semibold text-purple-700 mb-1">
                                     Admin Response:
                                   </p>
-                                  <p className="text-sm text-gray-300">
+                                  <p className="text-sm text-gray-700 leading-relaxed">
                                     {complaint.admin_response}
                                   </p>
                                 </div>
