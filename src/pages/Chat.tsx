@@ -4,38 +4,40 @@ import { ChatMessage } from "@/components/chat/ChatMessage";
 import { ChatInput } from "@/components/chat/ChatInput";
 import { Button } from "@/components/ui/button";
 import { Sparkles, RotateCcw, BookOpen, GraduationCap, CalendarDays, Building2 } from "lucide-react";
+import { toast } from "sonner";
+import { streamChat, type Message } from "@/lib/chat-api";
 
-interface Message {
+interface ChatMessageType {
   id: string;
   role: "user" | "assistant";
   content: string;
 }
 
 const quickPrompts = [
-  { icon: GraduationCap, label: "Academic calendar", prompt: "When does the current semester end?" },
-  { icon: BookOpen, label: "Exam schedule", prompt: "What is the examination schedule for this semester?" },
-  { icon: CalendarDays, label: "Fee deadlines", prompt: "What are the fee payment deadlines?" },
-  { icon: Building2, label: "Hostel rules", prompt: "What are the hostel rules and regulations?" },
+  { icon: GraduationCap, label: "Academic calendar", prompt: "What is the academic calendar for this semester? Include important dates." },
+  { icon: BookOpen, label: "Exam schedule", prompt: "What is the examination schedule and how can I get my hall ticket?" },
+  { icon: CalendarDays, label: "Fee deadlines", prompt: "What are the fee payment deadlines and available payment methods?" },
+  { icon: Building2, label: "Hostel rules", prompt: "What are the hostel rules and regulations at RGUKT RK Valley?" },
 ];
 
-const welcomeMessage: Message = {
+const welcomeMessage: ChatMessageType = {
   id: "welcome",
   role: "assistant",
   content: `Hello! 👋 I'm VALL-E-ASSIST, your AI-powered campus companion for RGUKT RK Valley.
 
 I can help you with:
-• Academic queries (courses, grades, schedules)
-• Examination information
-• Fee and payment details
-• Hostel and mess guidelines
-• Library resources
-• And much more!
+• **Academic queries** — courses, grades, schedules, departments
+• **Examination information** — schedules, hall tickets, results
+• **Fee and payment details** — deadlines, structure, scholarships
+• **Hostel and mess guidelines** — rules, timings, procedures
+• **Library resources** — timings, issuing rules, digital access
+• **Administrative procedures** — certificates, bonafide letters
 
 How can I assist you today?`,
 };
 
 export default function Chat() {
-  const [messages, setMessages] = useState<Message[]>([welcomeMessage]);
+  const [messages, setMessages] = useState<ChatMessageType[]>([welcomeMessage]);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -48,7 +50,7 @@ export default function Chat() {
   }, [messages]);
 
   const handleSend = async (content: string) => {
-    const userMessage: Message = {
+    const userMessage: ChatMessageType = {
       id: Date.now().toString(),
       role: "user",
       content,
@@ -57,26 +59,43 @@ export default function Chat() {
     setMessages((prev) => [...prev, userMessage]);
     setIsLoading(true);
 
-    // Simulate AI response (will be replaced with actual Gemini API call)
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    // Build message history for API (excluding welcome message)
+    const apiMessages: Message[] = messages
+      .filter((m) => m.id !== "welcome")
+      .map((m) => ({ role: m.role, content: m.content }));
+    apiMessages.push({ role: "user", content });
 
-    const assistantMessage: Message = {
-      id: (Date.now() + 1).toString(),
-      role: "assistant",
-      content: `Thank you for your question about "${content}". 
+    let assistantContent = "";
+    const assistantId = (Date.now() + 1).toString();
 
-This is a demo response. Once connected to Lovable Cloud and the Gemini API, I'll provide accurate, cited answers from official RGUKT documents.
+    // Add empty assistant message that will be updated
+    setMessages((prev) => [
+      ...prev,
+      { id: assistantId, role: "assistant", content: "" },
+    ]);
 
-The RAG (Retrieval-Augmented Generation) system will:
-1. Search through official RGUKT documents
-2. Find relevant information
-3. Generate a precise, sourced response
-
-Would you like to know anything else?`,
-    };
-
-    setMessages((prev) => [...prev, assistantMessage]);
-    setIsLoading(false);
+    await streamChat({
+      messages: apiMessages,
+      onDelta: (chunk) => {
+        assistantContent += chunk;
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === assistantId ? { ...m, content: assistantContent } : m
+          )
+        );
+      },
+      onDone: () => {
+        setIsLoading(false);
+      },
+      onError: (error) => {
+        setIsLoading(false);
+        // Remove the empty assistant message
+        setMessages((prev) => prev.filter((m) => m.id !== assistantId));
+        toast.error("Failed to get response", {
+          description: error,
+        });
+      },
+    });
   };
 
   const handleReset = () => {
@@ -116,11 +135,9 @@ Would you like to know anything else?`,
                   key={message.id}
                   role={message.role}
                   content={message.content}
+                  isLoading={isLoading && message.role === "assistant" && message.content === ""}
                 />
               ))}
-              {isLoading && (
-                <ChatMessage role="assistant" content="" isLoading />
-              )}
               <div ref={messagesEndRef} />
             </div>
           </div>
@@ -136,7 +153,8 @@ Would you like to know anything else?`,
                   <button
                     key={item.label}
                     onClick={() => handleSend(item.prompt)}
-                    className="flex items-center gap-2 p-3 rounded-xl bg-muted hover:bg-muted/80 text-left transition-smooth group"
+                    disabled={isLoading}
+                    className="flex items-center gap-2 p-3 rounded-xl bg-muted hover:bg-muted/80 text-left transition-smooth group disabled:opacity-50"
                   >
                     <Icon className="w-4 h-4 text-primary shrink-0" />
                     <span className="text-sm text-foreground group-hover:text-primary transition-smooth">
@@ -154,7 +172,7 @@ Would you like to know anything else?`,
           <div className="container mx-auto px-4 py-4 max-w-3xl">
             <ChatInput onSend={handleSend} isLoading={isLoading} />
             <p className="text-xs text-muted-foreground text-center mt-3">
-              VALL-E-ASSIST may occasionally provide inaccurate information. Please verify important details.
+              VALL-E-ASSIST provides general guidance. Please verify important information with official sources.
             </p>
           </div>
         </div>
