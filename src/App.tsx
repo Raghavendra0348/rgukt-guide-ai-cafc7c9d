@@ -5,13 +5,16 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
-import Index from "./pages/Index";
+import Index from "./pages/Index-New";
 import Chat from "./pages/Chat";
 import Complaints from "./pages/Complaints";
 import Admin from "./pages/Admin";
 import StudentAuth from "./pages/StudentAuth";
 import AdminAuth from "./pages/AdminAuth";
 import NotFound from "./pages/NotFound";
+import Blog from "./pages/Blog";
+import BlogArticle from "./pages/BlogArticle";
+import Dashboard from "./pages/Dashboard";
 
 const queryClient = new QueryClient();
 
@@ -23,33 +26,20 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <Routes>
+            {/* Public routes */}
             <Route path="/" element={<Index />} />
-            <Route path="/auth" element={<StudentAuth />} />
-            <Route path="/admin-login" element={<AdminAuth />} />
-            <Route
-              path="/chat"
-              element={
-                <ProtectedRoute>
-                  <Chat />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/complaints"
-              element={
-                <ProtectedRoute>
-                  <Complaints />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin"
-              element={
-                <ProtectedRoute requireAdmin>
-                  <Admin />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/student-auth" element={<StudentAuth />} />
+            <Route path="/admin-auth" element={<AdminAuth />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:slug" element={<BlogArticle />} />
+
+            {/* Protected routes - auth check happens inside component */}
+            <Route path="/chat" element={<Chat />} />
+            <Route path="/complaints" element={<Complaints />} />
+            <Route path="/admin" element={<Admin />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+
+            {/* Fallback route */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>

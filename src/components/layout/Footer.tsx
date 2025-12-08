@@ -9,17 +9,19 @@ export function Footer() {
           {/* Brand */}
           <div className="md:col-span-2">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-lg">V</span>
-              </div>
+              <img
+                src="/rgukt_logo.jpeg"
+                alt="RGUKT Logo"
+                className="w-12 h-12 rounded-xl object-cover shadow-sm"
+              />
               <div>
-                <h3 className="font-bold text-foreground text-lg">VALL-E-ASSIST</h3>
-                <p className="text-xs text-muted-foreground">RGUKT RK Valley Intelligent Assistant</p>
+                <h3 className="font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent text-lg">Medha AI</h3>
+                <p className="text-xs text-muted-foreground">RGUKT RK Valley AI Assistant</p>
               </div>
             </div>
             <p className="text-muted-foreground text-sm max-w-md">
-              Your AI-powered companion for navigating RGUKT RK Valley resources, 
-              answering questions, and resolving issues efficiently.
+              Your intelligent AI companion for navigating RGUKT RK Valley campus life.
+              Get instant answers with voice support and report issues efficiently.
             </p>
           </div>
 
@@ -70,7 +72,7 @@ export function Footer() {
 
         <div className="border-t border-border mt-8 pt-8 text-center">
           <p className="text-muted-foreground text-sm">
-            © {new Date().getFullYear()} VALL-E-ASSIST. Built for RGUKT RK Valley.
+            © {new Date().getFullYear()} Medha AI • Powered by Gemini AI • Built for RGUKT RK Valley
           </p>
         </div>
       </div>

@@ -82,49 +82,112 @@ export default function AdminAuth() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[hsl(220,20%,10%)]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-secondary"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-white to-blue-50">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex bg-[hsl(220,20%,10%)]">
-      {/* Left Panel - Form */}
+    <div className="min-h-screen flex bg-gradient-to-br from-purple-50 via-white to-blue-50">
+      {/* Left Panel - Features */}
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-600 p-12 flex-col justify-between relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-20 left-20 w-40 h-40 border-2 border-white rounded-full" />
+          <div className="absolute bottom-40 right-10 w-60 h-60 border-2 border-white rounded-full" />
+          <div className="absolute top-1/2 left-1/3 w-20 h-20 border-2 border-white rounded-full" />
+        </div>
+
+        <div className="relative z-10">
+          <div className="flex items-center gap-3 mb-2">
+            <img
+              src="/rgukt_logo.jpeg"
+              alt="RGUKT Logo"
+              className="w-12 h-12 rounded-xl object-cover ring-2 ring-white/30"
+            />
+            <span className="text-2xl font-bold text-white">Medha AI</span>
+          </div>
+          <p className="text-white/80 text-lg">Admin Portal</p>
+        </div>
+
+        <div className="relative z-10 space-y-8">
+          <h2 className="text-3xl font-bold text-white leading-tight">
+            Secure Admin<br />Dashboard Access
+          </h2>
+
+          <div className="space-y-6">
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center flex-shrink-0">
+                <LayoutDashboard className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-white">Manage System</h3>
+                <p className="text-white/70 text-sm">Complete control over the platform</p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center flex-shrink-0">
+                <Users className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-white">User Management</h3>
+                <p className="text-white/70 text-sm">Oversee students and complaints</p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center flex-shrink-0">
+                <BarChart3 className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-white">Analytics</h3>
+                <p className="text-white/70 text-sm">Track platform performance and insights</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="relative z-10">
+          <p className="text-white/60 text-sm">© 2024 RGUKT RK Valley. All rights reserved.</p>
+        </div>
+      </div>
+
+      {/* Right Panel - Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-12">
         <div className="w-full max-w-md">
           <Link
             to="/"
-            className="inline-flex items-center gap-2 text-[hsl(220,15%,60%)] hover:text-[hsl(220,15%,80%)] mb-8 transition-smooth"
+            className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-8 transition-smooth"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Home
           </Link>
 
-          <Card className="shadow-elevated border border-[hsl(220,20%,18%)] bg-[hsl(220,20%,14%)]">
+          <Card className="shadow-elevated border border-purple-100 bg-white">
             <CardHeader className="text-center pb-2">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-secondary to-accent flex items-center justify-center mx-auto mb-4 shadow-soft">
-                <Shield className="w-8 h-8 text-secondary-foreground" />
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <Shield className="w-8 h-8 text-white" />
               </div>
-              <CardTitle className="text-2xl text-[hsl(220,15%,95%)]">Admin Portal</CardTitle>
-              <CardDescription className="text-[hsl(220,15%,60%)]">
-                Secure access for VALL-E-ASSIST administrators
+              <CardTitle className="text-2xl text-gray-900">Admin Portal</CardTitle>
+              <CardDescription className="text-gray-600">
+                Secure access for Medha AI administrators
               </CardDescription>
             </CardHeader>
 
             <CardContent className="pt-6">
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-[hsl(220,15%,80%)]">Admin Email</Label>
+                  <Label htmlFor="email" className="text-gray-700">Admin Email</Label>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[hsl(220,15%,50%)]" />
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <Input
                       id="email"
                       type="email"
                       placeholder="admin@rgukt.ac.in"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="pl-10 bg-[hsl(220,20%,12%)] border-[hsl(220,20%,20%)] text-[hsl(220,15%,95%)] placeholder:text-[hsl(220,15%,40%)] focus:border-secondary"
+                      className="pl-10 border-purple-200 focus:border-purple-500 focus:ring-purple-500"
                       required
                     />
                   </div>
@@ -132,16 +195,16 @@ export default function AdminAuth() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="password" className="text-[hsl(220,15%,80%)]">Password</Label>
+                  <Label htmlFor="password" className="text-gray-700">Password</Label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[hsl(220,15%,50%)]" />
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <Input
                       id="password"
                       type="password"
                       placeholder="Enter your password"
                       value={formData.password}
                       onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                      className="pl-10 bg-[hsl(220,20%,12%)] border-[hsl(220,20%,20%)] text-[hsl(220,15%,95%)] placeholder:text-[hsl(220,15%,40%)] focus:border-secondary"
+                      className="pl-10 border-purple-200 focus:border-purple-500 focus:ring-purple-500"
                       required
                     />
                   </div>
@@ -151,7 +214,7 @@ export default function AdminAuth() {
                 <Button
                   type="submit"
                   size="lg"
-                  className="w-full bg-gradient-to-r from-secondary to-accent hover:opacity-90 text-secondary-foreground"
+                  className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-lg"
                   disabled={isLoading}
                 >
                   {isLoading ? (

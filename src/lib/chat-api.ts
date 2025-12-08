@@ -1,6 +1,31 @@
 export type Message = { role: "user" | "assistant"; content: string };
 
-const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
+// Use direct Gemini API instead of Supabase Edge Function
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || '';
+const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:streamGenerateContent';
+
+// Mock response generator for when no API key is available
+function getMockResponse(userMessage: string): string {
+  const lower = userMessage.toLowerCase();
+
+  if (lower.includes('hello') || lower.includes('hi')) {
+    return "Hello! I'm your RGUKT campus assistant. How can I help you today? I can provide information about academics, facilities, campus life, and more.";
+  }
+  if (lower.includes('hostel') || lower.includes('accommodation')) {
+    return "RGUKT provides hostel facilities for all students. The hostels are well-maintained with 24/7 security, mess facilities, and study rooms. Each hostel has wardens to help with student welfare.";
+  }
+  if (lower.includes('library')) {
+    return "The RGUKT library is a modern facility with a vast collection of books, journals, and digital resources. It's open from 8 AM to 10 PM on weekdays and has dedicated study areas for students.";
+  }
+  if (lower.includes('exam') || lower.includes('test')) {
+    return "For exam-related queries, please check the academic calendar on the official RGUKT website or contact your department office. Make sure to keep track of important dates and deadlines.";
+  }
+  if (lower.includes('fee') || lower.includes('payment')) {
+    return "For fee payment information, please visit the accounts section or check your student portal. Fee payment deadlines are strictly enforced, so make sure to pay on time.";
+  }
+
+  return "Thank you for your question. As a campus assistant, I can help with information about RGUKT academics, facilities, campus life, and administrative procedures. Could you please provide more specific details about what you'd like to know?";
+}
 
 export async function streamChat({
   messages,
@@ -14,20 +39,42 @@ export async function streamChat({
   onError: (error: string) => void;
 }) {
   try {
-    const resp = await fetch(CHAT_URL, {
+    // If no Gemini API key, use mock responses
+    if (!GEMINI_API_KEY) {
+      console.log("No API key found, using mock response");
+      const mockResponse = getMockResponse(messages[messages.length - 1]?.content || '');
+
+      // Simulate streaming
+      const words = mockResponse.split(' ');
+      for (const word of words) {
+        await new Promise(resolve => setTimeout(resolve, 50));
+        onDelta(word + ' ');
+      }
+      onDone();
+      return;
+    }
+
+    console.log("Sending chat request to Gemini API");
+    console.log("Message count:", messages.length);
+
+    const resp = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
       },
-      body: JSON.stringify({ messages }),
+      body: JSON.stringify({
+        contents: messages.map(m => ({
+          role: m.role === 'user' ? 'user' : 'model',
+          parts: [{ text: m.content }]
+        }))
+      }),
     });
 
     // Handle error responses
     if (!resp.ok) {
       const errorData = await resp.json().catch(() => ({}));
       const errorMessage = errorData.error || `Request failed with status ${resp.status}`;
-      
+
       if (resp.status === 429) {
         onError("Rate limit exceeded. Please wait a moment and try again.");
         return;
@@ -36,7 +83,7 @@ export async function streamChat({
         onError("AI usage limit reached. Please try again later.");
         return;
       }
-      
+
       onError(errorMessage);
       return;
     }

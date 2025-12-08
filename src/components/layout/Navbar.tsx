@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, MessageCircle, FileText, LayoutDashboard, LogIn, LogOut, User } from "lucide-react";
+import { Menu, X, MessageCircle, FileText, LayoutDashboard, LogIn, LogOut, User, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
+import { RGUKTLogo } from "@/components/RGUKTLogo";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,9 +19,12 @@ export function Navbar() {
   const { user, isAdmin, signOut, loading } = useAuth();
 
   const navLinks = [
-    { href: "/chat", label: "AI Assistant", icon: MessageCircle },
-    { href: "/complaints", label: "Report Issue", icon: FileText },
-    ...(isAdmin ? [{ href: "/admin", label: "Dashboard", icon: LayoutDashboard }] : []),
+    { href: "/", label: "Home", icon: MessageCircle },
+    { href: "/chat", label: "Chat", icon: MessageCircle },
+    { href: "/complaints", label: "Complaints", icon: FileText },
+    { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/blog", label: "Blog", icon: BookOpen },
+    ...(isAdmin ? [{ href: "/admin", label: "Admin", icon: LayoutDashboard }] : []),
   ];
 
   const handleSignOut = async () => {
@@ -29,16 +33,18 @@ export function Navbar() {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
-      <nav className="container mx-auto px-4 h-16 flex items-center justify-between">
+    <header className="floating-navbar">
+      <nav className="flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-3 group">
-          <div className="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center shadow-soft group-hover:shadow-elevated transition-smooth">
-            <span className="text-primary-foreground font-bold text-lg">V</span>
-          </div>
+          <img
+            src="/rgukt_logo.jpeg"
+            alt="RGUKT Logo"
+            className="w-10 h-10 rounded-full object-cover group-hover:scale-110 transition-transform duration-300 shadow-md ring-2 ring-purple-100"
+          />
           <div className="hidden sm:block">
-            <h1 className="font-bold text-foreground text-lg leading-tight">VALL-E-ASSIST</h1>
-            <p className="text-xs text-muted-foreground">RGUKT RK Valley</p>
+            <h1 className="font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent text-base leading-tight">Medha AI</h1>
+            <p className="text-[10px] text-muted-foreground">RGUKT RK Valley</p>
           </div>
         </Link>
 

@@ -108,30 +108,32 @@ export default function StudentAuth() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-hero flex">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 flex">
       {/* Left Panel - Features */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-primary p-12 flex-col justify-between relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-600 p-12 flex-col justify-between relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-20 left-20 w-40 h-40 border-2 border-primary-foreground rounded-full" />
-          <div className="absolute bottom-40 right-10 w-60 h-60 border-2 border-primary-foreground rounded-full" />
-          <div className="absolute top-1/2 left-1/3 w-20 h-20 border-2 border-primary-foreground rounded-full" />
+          <div className="absolute top-20 left-20 w-40 h-40 border-2 border-white rounded-full" />
+          <div className="absolute bottom-40 right-10 w-60 h-60 border-2 border-white rounded-full" />
+          <div className="absolute top-1/2 left-1/3 w-20 h-20 border-2 border-white rounded-full" />
         </div>
-        
+
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-12 h-12 rounded-xl bg-primary-foreground/20 flex items-center justify-center backdrop-blur-sm">
-              <GraduationCap className="w-7 h-7 text-primary-foreground" />
-            </div>
-            <span className="text-2xl font-bold text-primary-foreground">VALL-E-ASSIST</span>
+            <img
+              src="/rgukt_logo.jpeg"
+              alt="RGUKT Logo"
+              className="w-12 h-12 rounded-xl object-cover ring-2 ring-white/30"
+            />
+            <span className="text-2xl font-bold text-white">Medha AI</span>
           </div>
-          <p className="text-primary-foreground/80 text-lg">Student Portal</p>
+          <p className="text-white/80 text-lg">Student Portal</p>
         </div>
 
         <div className="relative z-10 space-y-8">
           <h2 className="text-3xl font-bold text-primary-foreground leading-tight">
             Your Intelligent<br />University Assistant
           </h2>
-          
+
           <div className="space-y-6">
             <div className="flex items-start gap-4">
               <div className="w-10 h-10 rounded-lg bg-primary-foreground/20 flex items-center justify-center flex-shrink-0">
@@ -142,7 +144,7 @@ export default function StudentAuth() {
                 <p className="text-primary-foreground/70 text-sm">Get instant answers to your university queries</p>
               </div>
             </div>
-            
+
             <div className="flex items-start gap-4">
               <div className="w-10 h-10 rounded-lg bg-primary-foreground/20 flex items-center justify-center flex-shrink-0">
                 <BookOpen className="w-5 h-5 text-primary-foreground" />

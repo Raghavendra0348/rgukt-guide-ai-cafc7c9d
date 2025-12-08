@@ -5,12 +5,13 @@ import { ChatInput } from "@/components/chat/ChatInput";
 import { Button } from "@/components/ui/button";
 import { Sparkles, RotateCcw, BookOpen, GraduationCap, CalendarDays, Building2 } from "lucide-react";
 import { toast } from "sonner";
-import { streamChat, type Message } from "@/lib/chat-api";
+import { streamChat, type Message } from "@/lib/gemini-api";
 
 interface ChatMessageType {
   id: string;
   role: "user" | "assistant";
   content: string;
+  image?: string;
 }
 
 const quickPrompts = [
@@ -23,7 +24,7 @@ const quickPrompts = [
 const welcomeMessage: ChatMessageType = {
   id: "welcome",
   role: "assistant",
-  content: `Hello! 👋 I'm VALL-E-ASSIST, your AI-powered campus companion for RGUKT RK Valley.
+  content: `Hello! 👋 I'm Medha AI, your intelligent campus assistant for RGUKT RK Valley.
 
 I can help you with:
 • **Academic queries** — courses, grades, schedules, departments
@@ -49,11 +50,12 @@ export default function Chat() {
     scrollToBottom();
   }, [messages]);
 
-  const handleSend = async (content: string) => {
+  const handleSend = async (content: string, image?: string) => {
     const userMessage: ChatMessageType = {
       id: Date.now().toString(),
       role: "user",
       content,
+      image,
     };
 
     setMessages((prev) => [...prev, userMessage]);
@@ -63,7 +65,7 @@ export default function Chat() {
     const apiMessages: Message[] = messages
       .filter((m) => m.id !== "welcome")
       .map((m) => ({ role: m.role, content: m.content }));
-    apiMessages.push({ role: "user", content });
+    apiMessages.push({ role: "user", content: image ? `${content}\n[Image provided for analysis]` : content });
 
     let assistantContent = "";
     const assistantId = (Date.now() + 1).toString();
@@ -103,31 +105,24 @@ export default function Chat() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-[#2b2929] flex flex-col">
       <Navbar />
 
-      <main className="flex-1 pt-16 flex flex-col">
-        {/* Header */}
-        <div className="border-b border-border bg-card/50 backdrop-blur-sm">
-          <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center animate-pulse-glow">
-                <Sparkles className="w-5 h-5 text-primary-foreground" />
-              </div>
-              <div>
-                <h1 className="font-bold text-foreground">AI Assistant</h1>
-                <p className="text-xs text-muted-foreground">Powered by Gemini</p>
-              </div>
-            </div>
-            <Button variant="ghost" size="sm" onClick={handleReset} className="gap-2">
-              <RotateCcw className="w-4 h-4" />
-              New Chat
-            </Button>
-          </div>
+      <main className="flex-1 pt-20 flex flex-col relative">
+        {/* Floating New Chat Button */}
+        <div className="absolute top-24 right-6 z-10">
+          <Button
+            size="icon"
+            onClick={handleReset}
+            className="h-14 w-14 rounded-full bg-gradient-to-br from-[#8439c5] to-purple-700 hover:from-[#8439c5]/90 hover:to-purple-800 shadow-2xl hover:shadow-[#8439c5]/50 transition-all border-2 border-[#8439c5]/30"
+            title="New Chat"
+          >
+            <span className="text-3xl font-light text-white">+</span>
+          </Button>
         </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto bg-[#2b2929]">
           <div className="container mx-auto px-4 py-6 max-w-3xl">
             <div className="space-y-6">
               {messages.map((message) => (
@@ -135,6 +130,7 @@ export default function Chat() {
                   key={message.id}
                   role={message.role}
                   content={message.content}
+                  image={message.image}
                   isLoading={isLoading && message.role === "assistant" && message.content === ""}
                 />
               ))}
@@ -154,10 +150,12 @@ export default function Chat() {
                     key={item.label}
                     onClick={() => handleSend(item.prompt)}
                     disabled={isLoading}
-                    className="flex items-center gap-2 p-3 rounded-xl bg-muted hover:bg-muted/80 text-left transition-smooth group disabled:opacity-50"
+                    className="flex flex-col items-center gap-2 p-4 rounded-xl bg-[#1a1818] border-2 border-[#8439c5]/30 hover:border-[#8439c5] hover:bg-[#8439c5]/10 text-center transition-all disabled:opacity-50 group"
                   >
-                    <Icon className="w-4 h-4 text-primary shrink-0" />
-                    <span className="text-sm text-foreground group-hover:text-primary transition-smooth">
+                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#8439c5]/20 to-purple-700/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <Icon className="w-5 h-5 text-[#8439c5]" />
+                    </div>
+                    <span className="text-xs text-[#e3e3e3] font-medium group-hover:text-white transition-colors">
                       {item.label}
                     </span>
                   </button>
@@ -168,11 +166,11 @@ export default function Chat() {
         )}
 
         {/* Input */}
-        <div className="border-t border-border bg-card/80 backdrop-blur-sm">
-          <div className="container mx-auto px-4 py-4 max-w-3xl">
+        <div className="border-t-2 border-[#8439c5]/30 bg-[#1a1818]">
+          <div className="container mx-auto px-4 py-5 max-w-3xl">
             <ChatInput onSend={handleSend} isLoading={isLoading} />
-            <p className="text-xs text-muted-foreground text-center mt-3">
-              VALL-E-ASSIST provides general guidance. Please verify important information with official sources.
+            <p className="text-xs text-[#e3e3e3]/60 text-center mt-3">
+              Medha AI • Powered by Gemini AI • Supports English, Hindi & Telugu
             </p>
           </div>
         </div>
