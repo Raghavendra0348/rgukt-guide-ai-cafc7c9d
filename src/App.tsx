@@ -9,7 +9,8 @@ import Index from "./pages/Index";
 import Chat from "./pages/Chat";
 import Complaints from "./pages/Complaints";
 import Admin from "./pages/Admin";
-import Auth from "./pages/Auth";
+import StudentAuth from "./pages/StudentAuth";
+import AdminAuth from "./pages/AdminAuth";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -23,7 +24,8 @@ const App = () => (
         <AuthProvider>
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/auth" element={<Auth />} />
+            <Route path="/auth" element={<StudentAuth />} />
+            <Route path="/admin-login" element={<AdminAuth />} />
             <Route
               path="/chat"
               element={
