@@ -51,7 +51,7 @@ const priorityConfig = {
 export default function Complaints() {
   const { user, isAdmin, loading: authLoading } = useAuth();
   const [activeTab, setActiveTab] = useState("submit");
-  
+
   // Form state
   const [formData, setFormData] = useState({
     title: "",
@@ -59,7 +59,7 @@ export default function Complaints() {
     category: "",
     priority: "medium" as "low" | "medium" | "high",
   });
-  
+
   const [submitting, setSubmitting] = useState(false);
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [complaints, setComplaints] = useState<Complaint[]>([]);
@@ -78,11 +78,11 @@ export default function Complaints() {
     setComplaints(userComplaints);
     setLoading(false);
   };
-  
+
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
-    
+
     Array.from(files).forEach(file => {
       if (file.type.startsWith('image/')) {
         const reader = new FileReader();
@@ -95,21 +95,21 @@ export default function Complaints() {
       }
     });
   };
-  
+
   const removeImage = (index: number) => {
     setUploadedImages(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.title || !formData.description || !formData.category) {
       toast.error("Please fill in all required fields");
       return;
     }
 
     setSubmitting(true);
-    
+
     try {
       const complaintData = {
         title: formData.title,
@@ -121,7 +121,7 @@ export default function Complaints() {
       };
 
       const result = await submitComplaint(complaintData);
-      
+
       if (result) {
         // Reset form
         setFormData({
@@ -131,10 +131,10 @@ export default function Complaints() {
           priority: "medium",
         });
         setUploadedImages([]);
-        
+
         // Reload complaints to show the new one
         await loadComplaints();
-        
+
         // Switch to list tab to show the new complaint
         setActiveTab("list");
       }
@@ -182,7 +182,7 @@ export default function Complaints() {
               <p className="text-gray-600 mb-6">
                 Admins cannot submit complaints. Please use the dashboard to manage existing complaints.
               </p>
-              <Button 
+              <Button
                 onClick={() => window.location.href = '/dashboard'}
                 className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
               >
@@ -212,7 +212,7 @@ export default function Complaints() {
               <p className="text-gray-600 mb-6">
                 Please sign in to submit and view complaints
               </p>
-              <Button 
+              <Button
                 onClick={() => window.location.href = '/student-auth'}
                 className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
               >

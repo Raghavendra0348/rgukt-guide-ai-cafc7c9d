@@ -162,9 +162,9 @@ export function AdminComplaintsManager() {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      month: 'short', 
-      day: 'numeric', 
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
       year: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
@@ -352,9 +352,9 @@ export function AdminComplaintsManager() {
                     style={{
                       borderLeftColor:
                         complaint.status === 'open' ? '#3b82f6' :
-                        complaint.status === 'in_progress' ? '#eab308' :
-                        complaint.status === 'resolved' ? '#22c55e' :
-                        '#6b7280'
+                          complaint.status === 'in_progress' ? '#eab308' :
+                            complaint.status === 'resolved' ? '#22c55e' :
+                              '#6b7280'
                     }}
                   >
                     <CardContent className="p-6">

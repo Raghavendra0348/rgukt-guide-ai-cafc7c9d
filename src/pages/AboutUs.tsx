@@ -110,7 +110,7 @@ export default function AboutUs() {
               </span>
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              Medha AI is an intelligent campus assistant designed exclusively for RGUKT RK Valley students, 
+              Medha AI is an intelligent campus assistant designed exclusively for RGUKT RK Valley students,
               providing instant, accurate answers to all your campus-related queries through advanced AI technology.
             </p>
           </div>
@@ -124,8 +124,8 @@ export default function AboutUs() {
                 </div>
                 <h3 className="text-2xl font-bold text-[#2b2929] mb-4">Our Mission</h3>
                 <p className="text-gray-600 leading-relaxed">
-                  To revolutionize campus life by providing students with instant, AI-powered assistance 
-                  that helps them navigate academic, administrative, and daily campus challenges efficiently 
+                  To revolutionize campus life by providing students with instant, AI-powered assistance
+                  that helps them navigate academic, administrative, and daily campus challenges efficiently
                   and effectively in their preferred language.
                 </p>
               </CardContent>
@@ -138,8 +138,8 @@ export default function AboutUs() {
                 </div>
                 <h3 className="text-2xl font-bold text-[#2b2929] mb-4">Our Vision</h3>
                 <p className="text-gray-600 leading-relaxed">
-                  To become the most trusted and comprehensive digital companion for every RGUKT student, 
-                  making campus information accessible, understandable, and actionable through cutting-edge 
+                  To become the most trusted and comprehensive digital companion for every RGUKT student,
+                  making campus information accessible, understandable, and actionable through cutting-edge
                   AI technology and multilingual support.
                 </p>
               </CardContent>
@@ -183,7 +183,7 @@ export default function AboutUs() {
               </h2>
 
               <p className="text-lg text-gray-700 leading-relaxed">
-                Medha AI is specifically designed to support RGUKT RK Valley students in their academic pursuits. 
+                Medha AI is specifically designed to support RGUKT RK Valley students in their academic pursuits.
                 Our intelligent assistant provides instant, accurate answers to help you excel in your studies.
               </p>
 
@@ -305,8 +305,8 @@ export default function AboutUs() {
               <Card key={index} className="border-2 border-gray-100 hover:border-[#8439c5]/30 hover:shadow-xl transition-all group overflow-hidden">
                 {/* Feature Image */}
                 <div className="relative h-40 overflow-hidden">
-                  <img 
-                    src={feature.image} 
+                  <img
+                    src={feature.image}
                     alt={feature.title}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                   />
@@ -317,7 +317,7 @@ export default function AboutUs() {
                     </div>
                   </div>
                 </div>
-                
+
                 <CardContent className="p-6">
                   <h3 className="text-xl font-bold text-[#2b2929] mb-3">{feature.title}</h3>
                   <p className="text-gray-600">{feature.description}</p>
@@ -370,8 +370,8 @@ export default function AboutUs() {
               <Card key={index} className="border-2 border-[#8439c5]/20 hover:shadow-xl transition-shadow overflow-hidden group">
                 {/* Section Image */}
                 <div className="relative h-32 overflow-hidden">
-                  <img 
-                    src={section.image} 
+                  <img
+                    src={section.image}
                     alt={section.title}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                   />
@@ -382,7 +382,7 @@ export default function AboutUs() {
                     </div>
                   </div>
                 </div>
-                
+
                 <CardContent className="p-8">
                   <h3 className="text-xl font-bold text-[#2b2929] mb-6">{section.title}</h3>
                   <ul className="space-y-3">
@@ -526,7 +526,7 @@ export default function AboutUs() {
                 Have Questions About Medha AI?
               </h2>
               <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-                Our AI is ready to help you 24/7. Start chatting now and experience 
+                Our AI is ready to help you 24/7. Start chatting now and experience
                 the future of campus assistance.
               </p>
               <a href="/chat">

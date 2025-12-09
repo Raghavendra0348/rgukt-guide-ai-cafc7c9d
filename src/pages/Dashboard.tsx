@@ -79,7 +79,7 @@ export default function Dashboard() {
   const { user, isAdmin } = useAuth();
   const [complaints, setComplaints] = useState<Complaint[]>([]);
   const [loading, setLoading] = useState(true);
-  
+
   // Filter states
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
@@ -100,13 +100,13 @@ export default function Dashboard() {
       setLoading(true);
       console.log('🔄 Dashboard: Loading complaints...');
       console.log('👤 Current user:', user);
-      
+
       // Load all complaints for everyone to see (transparency)
       const complaintsData = await getAllComplaintsPublic();
-      
+
       console.log('✅ Dashboard: Received complaints:', complaintsData.length);
       console.log('📋 Complaints data:', complaintsData);
-      
+
       setComplaints(complaintsData);
       setLoading(false);
     } catch (error) {
@@ -120,7 +120,7 @@ export default function Dashboard() {
     const totalComplaints = complaints.length;
     const activeIssues = complaints.filter(c => c.status === 'open' || c.status === 'in_progress').length;
     const resolvedComplaints = complaints.filter(c => c.status === 'resolved' || c.status === 'closed').length;
-    
+
     // Calculate resolved today
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -168,10 +168,10 @@ export default function Dashboard() {
   // Format date for display
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      month: 'short', 
-      day: 'numeric', 
-      year: 'numeric' 
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
     });
   };
 
@@ -181,7 +181,7 @@ export default function Dashboard() {
       const matchesStatus = statusFilter === "all" || complaint.status === statusFilter;
       const matchesCategory = categoryFilter === "all" || complaint.category === categoryFilter;
       const matchesPriority = priorityFilter === "all" || complaint.priority === priorityFilter;
-      
+
       return matchesStatus && matchesCategory && matchesPriority;
     });
   };
@@ -205,7 +205,7 @@ export default function Dashboard() {
               <p className="text-gray-600 mb-6">
                 Please sign in to access the dashboard
               </p>
-              <Button 
+              <Button
                 onClick={() => window.location.href = '/student-auth'}
                 className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
               >
@@ -235,8 +235,8 @@ export default function Dashboard() {
               Dashboard
             </h1>
             <p className="text-lg text-gray-600">
-              {isAdmin 
-                ? 'Monitor all complaints, track statistics, and manage campus issues' 
+              {isAdmin
+                ? 'Monitor all complaints, track statistics, and manage campus issues'
                 : 'View all campus complaints, track statistics, and see what issues are being reported'}
             </p>
           </div>
@@ -247,7 +247,7 @@ export default function Dashboard() {
               const Icon = stat.icon;
               const isPositive = stat.change.includes('+') || stat.change.includes('total') || stat.change.includes('today');
               const isNeutral = stat.change.includes('No data') || stat.change.includes('None') || stat.change.includes('All Clear');
-              
+
               return (
                 <Card
                   key={stat.title}
@@ -367,7 +367,7 @@ export default function Dashboard() {
                       const StatusIcon = getStatusIcon(complaint.status === 'open' ? 'Open' : complaint.status === 'in_progress' ? 'In Progress' : complaint.status === 'resolved' ? 'Resolved' : 'Closed');
                       const statusLabel = complaint.status === 'open' ? 'Open' : complaint.status === 'in_progress' ? 'In Progress' : complaint.status === 'resolved' ? 'Resolved' : 'Closed';
                       const priorityLabel = complaint.priority.charAt(0).toUpperCase() + complaint.priority.slice(1);
-                      
+
                       return (
                         <div
                           key={complaint.id}

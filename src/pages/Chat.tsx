@@ -208,7 +208,7 @@ export default function Chat() {
                   className="w-full h-auto object-contain transition-transform duration-300"
                 />
               </div>
-              
+
               {/* Animated Badge */}
               <div className="absolute -top-2 -right-2 bg-gradient-to-r from-purple-600 via-purple-500 to-blue-600 text-white px-3 py-1.5 rounded-full shadow-xl text-xs font-bold flex items-center gap-1.5 animate-pulse">
                 <Sparkles className="w-3 h-3" />
@@ -237,7 +237,7 @@ export default function Chat() {
                 <span className="w-1 h-4 bg-gradient-to-b from-purple-500 to-blue-500 rounded-full"></span>
                 Key Features
               </h5>
-              
+
               <div className="grid grid-cols-1 gap-2.5">
                 <div className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200 hover:shadow-md transition-all cursor-pointer group">
                   <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">

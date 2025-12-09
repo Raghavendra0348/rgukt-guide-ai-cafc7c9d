@@ -94,10 +94,10 @@ export async function streamChat({
     const chat = model.startChat({
       history: chatHistory,
       generationConfig: {
-        maxOutputTokens: 512, // Reduced from 2048 for shorter responses
-        temperature: 0.5, // Lower temperature for more focused answers
-        topP: 0.85,
-        topK: 30,
+        maxOutputTokens: 1024, // Increased for complete responses
+        temperature: 0.7, // Balanced for natural yet accurate responses
+        topP: 0.9,
+        topK: 40,
       },
     });
 

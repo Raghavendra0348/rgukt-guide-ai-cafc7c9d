@@ -37,22 +37,22 @@ export function ChatMessage({ role, content, image, isLoading }: ChatMessageProp
 
         // Find all mermaid code blocks
         const mermaidBlocks = messageRef.current.querySelectorAll('.mermaid-diagram:not(.rendered)');
-        
+
         mermaidBlocks.forEach(async (block, index) => {
           const code = block.textContent || '';
           if (code.trim()) {
             try {
               // Validate the diagram syntax before rendering
               const trimmedCode = code.trim();
-              
+
               // Check if it's a valid mermaid diagram type
               const validTypes = ['graph', 'flowchart', 'sequenceDiagram', 'classDiagram', 'stateDiagram', 'erDiagram', 'journey', 'gantt', 'pie', 'gitGraph', 'mindmap', 'timeline'];
               const isValidDiagram = validTypes.some(type => trimmedCode.startsWith(type));
-              
+
               if (!isValidDiagram) {
                 throw new Error('Invalid diagram type');
               }
-              
+
               const elementId = `mermaid-${Date.now()}-${index}`;
               const { svg } = await mermaid.render(elementId, trimmedCode);
               block.innerHTML = svg;
@@ -127,11 +127,11 @@ export function ChatMessage({ role, content, image, isLoading }: ChatMessageProp
       if (i % 2 === 1) {
         return <strong key={i} className="font-semibold text-gray-900">{part}</strong>;
       }
-      
+
       // Handle inline code `code`
       const codeRegex = /`([^`]+)`/g;
       const codeParts = part.split(codeRegex);
-      
+
       return codeParts.map((codePart, j) => {
         if (j % 2 === 1) {
           return (
