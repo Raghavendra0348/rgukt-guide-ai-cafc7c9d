@@ -78,7 +78,7 @@ export async function streamChat({
   try {
     const ai = getGenAI();
     const model = ai.getGenerativeModel({
-      model: "gemini-2.5-flash",
+      model: "gemini-2.5-flash-preview-09-2025",
       systemInstruction: SYSTEM_PROMPT,
     });
 
