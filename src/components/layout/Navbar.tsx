@@ -24,7 +24,7 @@ export function Navbar() {
     // Only show Complaints link for students, not admin
     ...(!isAdmin ? [{ href: "/complaints", label: "Complaints", icon: FileText }] : []),
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/about", label: "About Us", icon: Info },
+    { href: "/about", label: "About", icon: Info },
     ...(isAdmin ? [{ href: "/admin", label: "Admin", icon: LayoutDashboard }] : []),
   ];
 
