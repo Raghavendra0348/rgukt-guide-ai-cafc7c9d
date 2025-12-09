@@ -20,6 +20,37 @@ function getMockResponse(userMessage: string): string {
   if (lower.includes('exam') || lower.includes('test')) {
     return "For exam-related queries, please check the academic calendar on the official RGUKT website or contact your department office. Make sure to keep track of important dates and deadlines.";
   }
+  if (lower.includes('sgpa') || lower.includes('grade') || lower.includes('gpa')) {
+    return `**RGUKT SGPA Calculation:**
+
+RGUKT calculates SGPA (Semester Grade Point Average) based on credits and grade points earned in each subject.
+
+**SGPA Formula:**
+SGPA = (Sum of [Credits × Grade Point for each subject]) / (Total Credits for the semester)
+
+**Grade System & Grade Points:**
+- **Excellent (Ex)** → Grade Point: 10
+- **A** → Grade Point: 9
+- **B** → Grade Point: 8
+- **Failed/Remedial (F/R)** → Grade Point: 0
+
+**Example Calculation:**
+
+Semester with 20 total credits:
+1. Mathematics (4 credits) - Grade: Ex → 4 × 10 = 40
+2. Physics (4 credits) - Grade: A → 4 × 9 = 36
+3. Chemistry (3 credits) - Grade: B → 3 × 8 = 24
+4. Programming (4 credits) - Grade: Ex → 4 × 10 = 40
+5. English (3 credits) - Grade: A → 3 × 9 = 27
+6. Workshop (2 credits) - Grade: F → 2 × 0 = 0
+
+**Calculation:**
+- Sum = 40 + 36 + 24 + 40 + 27 + 0 = 167
+- Total Credits = 20
+- **SGPA = 167 / 20 = 8.35**
+
+**Note:** If you fail a subject (Remedial/F), it gets 0 grade points but the credits are still counted in the total credits.`;
+  }
   if (lower.includes('fee') || lower.includes('payment')) {
     return "For fee payment information, please visit the accounts section or check your student portal. Fee payment deadlines are strictly enforced, so make sure to pay on time.";
   }
@@ -57,16 +88,51 @@ export async function streamChat({
     console.log("Sending chat request to Gemini API");
     console.log("Message count:", messages.length);
 
+    // System prompt with RGUKT-specific knowledge
+    const systemPrompt = `You are Medha AI, an intelligent assistant for RGUKT (Rajiv Gandhi University of Knowledge Technologies) students. 
+
+IMPORTANT INFORMATION ABOUT RGUKT SGPA CALCULATION:
+- RGUKT uses a credit-based grading system with grade points
+- Each course has specific credits (typically 3-4 credits per subject)
+- Grades and Grade Points: Excellent (Ex) = 10, A = 9, B = 8, Failed/Remedial (F/R) = 0
+- SGPA Formula: SGPA = (Sum of [Credits × Grade Point for each subject]) / (Total Credits for the semester)
+- Example: If you have 3 subjects:
+  * Math (4 credits, Ex grade): 4 × 10 = 40
+  * Physics (4 credits, A grade): 4 × 9 = 36
+  * Chemistry (4 credits, B grade): 4 × 8 = 32
+  * Total: (40 + 36 + 32) / 12 = 108 / 12 = 9.0 SGPA
+- If you fail a subject, it gets 0 grade points but the credits are still counted in total credits
+- Example with failure: If Chemistry was Failed: (40 + 36 + 0) / 12 = 76 / 12 = 6.33 SGPA
+
+FORMATTING GUIDELINES:
+- Use clear text formatting with bullet points and numbered lists
+- Use tables when showing data (use markdown table format)
+- Use bold (**text**) for emphasis
+- Do NOT use Mermaid diagrams or flowcharts unless specifically requested
+- Keep responses clear, concise, and easy to read
+
+Be helpful, accurate, and provide specific information about RGUKT campus life, academics, facilities, and procedures.`;
+
     const resp = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        contents: messages.map(m => ({
-          role: m.role === 'user' ? 'user' : 'model',
-          parts: [{ text: m.content }]
-        }))
+        contents: [
+          {
+            role: 'user',
+            parts: [{ text: systemPrompt }]
+          },
+          {
+            role: 'model',
+            parts: [{ text: 'Understood. I am Medha AI, your RGUKT campus assistant. I will provide accurate information about RGUKT, including the correct SGPA calculation method where SGPA = (Sum of [Credits × Grade Point]) / (Total Credits), with grades Ex=10, A=9, B=8, F/R=0. How can I help you today?' }]
+          },
+          ...messages.map(m => ({
+            role: m.role === 'user' ? 'user' : 'model',
+            parts: [{ text: m.content }]
+          }))
+        ]
       }),
     });
 

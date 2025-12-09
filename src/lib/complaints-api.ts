@@ -148,6 +148,34 @@ export async function getAllComplaints(): Promise<Complaint[]> {
   }
 }
 
+// Get all complaints for everyone (public transparency)
+export async function getAllComplaintsPublic(): Promise<Complaint[]> {
+  try {
+    console.log('📋 Fetching all complaints for public view...');
+    await delay(200); // Simulate network delay
+
+    const user = getCurrentMockUser();
+
+    if (!user) {
+      console.error('❌ No user found - authentication required');
+      return [];
+    }
+
+    const complaints = getMockComplaints();
+
+    // Sort by created_at descending
+    complaints.sort((a, b) =>
+      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
+
+    console.log(`✅ Found ${complaints.length} total complaints (public view)`);
+    return complaints;
+  } catch (error) {
+    console.error('❌ Error fetching all complaints:', error);
+    return [];
+  }
+}
+
 // Update complaint status (admin only)
 export async function updateComplaintStatus(
   id: string,

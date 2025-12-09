@@ -21,7 +21,8 @@ export function Navbar() {
   const navLinks = [
     { href: "/", label: "Home", icon: MessageCircle },
     { href: "/chat", label: "Chat", icon: MessageCircle },
-    { href: "/complaints", label: "Complaints", icon: FileText },
+    // Only show Complaints link for students, not admin
+    ...(!isAdmin ? [{ href: "/complaints", label: "Complaints", icon: FileText }] : []),
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/about", label: "About Us", icon: Info },
     ...(isAdmin ? [{ href: "/admin", label: "Admin", icon: LayoutDashboard }] : []),

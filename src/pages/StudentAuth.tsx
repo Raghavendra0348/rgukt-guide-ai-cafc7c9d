@@ -183,7 +183,7 @@ export default function StudentAuth() {
               </CardTitle>
               <CardDescription>
                 {isLogin
-                  ? "Access your VALL-E-ASSIST student account"
+                  ? "Access your Medha AI student account"
                   : "Create your student account to get started"}
               </CardDescription>
             </CardHeader>

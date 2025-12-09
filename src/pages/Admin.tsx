@@ -22,12 +22,12 @@ export default function Admin() {
   // Show loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#2b2929] via-gray-900 to-[#2b2929] flex flex-col">
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 flex flex-col">
         <Navbar />
         <main className="flex-1 flex items-center justify-center">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto mb-4"></div>
-            <p className="text-gray-400">Loading...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading...</p>
           </div>
         </main>
         <Footer />
@@ -38,18 +38,18 @@ export default function Admin() {
   // Show authentication required
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#2b2929] via-gray-900 to-[#2b2929] flex flex-col">
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 flex flex-col">
         <Navbar />
         <main className="flex-1 flex items-center justify-center px-4">
-          <Card className="max-w-md w-full shadow-xl bg-gray-800 border-gray-700">
+          <Card className="max-w-md w-full shadow-xl bg-white border-purple-100">
             <CardContent className="pt-8 pb-8 text-center">
-              <div className="w-16 h-16 bg-purple-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Lock className="w-8 h-8 text-purple-500" />
+              <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Lock className="w-8 h-8 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-white mb-2">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
                 Authentication Required
               </h2>
-              <p className="text-gray-400 mb-6">
+              <p className="text-gray-600 mb-6">
                 Please sign in as an administrator to access this page
               </p>
               <Button
@@ -69,25 +69,25 @@ export default function Admin() {
   // Show access denied if not admin
   if (!isAdmin) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#2b2929] via-gray-900 to-[#2b2929] flex flex-col">
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 flex flex-col">
         <Navbar />
         <main className="flex-1 flex items-center justify-center px-4">
-          <Card className="max-w-md w-full shadow-xl bg-gray-800 border-gray-700">
+          <Card className="max-w-md w-full shadow-xl bg-white border-purple-100">
             <CardContent className="pt-8 pb-8 text-center">
-              <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <ShieldAlert className="w-8 h-8 text-red-500" />
+              <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <ShieldAlert className="w-8 h-8 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-white mb-2">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
                 Access Denied
               </h2>
-              <p className="text-gray-400 mb-6">
+              <p className="text-gray-600 mb-6">
                 You don't have administrator privileges to access this page
               </p>
               <div className="flex gap-3 justify-center">
                 <Button
                   onClick={() => navigate('/dashboard')}
                   variant="outline"
-                  className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                  className="border-purple-300 text-gray-700 hover:bg-purple-50"
                 >
                   Go to Dashboard
                 </Button>
@@ -107,21 +107,21 @@ export default function Admin() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#2b2929] via-gray-900 to-[#2b2929] flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 flex flex-col">
       <Navbar />
 
       <main className="flex-1 pt-24 pb-16 px-4">
         <div className="container mx-auto max-w-7xl">
           {/* Header */}
           <div className="mb-8">
-            <div className="inline-flex items-center gap-2 bg-purple-500/10 text-purple-400 px-4 py-2 rounded-full text-sm font-medium mb-4 border border-purple-500/20">
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700 px-4 py-2 rounded-full text-sm font-medium mb-4 border border-purple-200 shadow-sm">
               <LayoutDashboard className="w-4 h-4" />
               Admin Dashboard
             </div>
-            <h1 className="text-3xl font-bold text-white mb-2">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
               System Management
             </h1>
-            <p className="text-gray-400">
+            <p className="text-gray-600">
               Manage and monitor the Medha AI platform effectively.
             </p>
           </div>

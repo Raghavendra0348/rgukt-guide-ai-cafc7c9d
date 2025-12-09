@@ -158,13 +158,13 @@ export default function AdminAuth() {
         <div className="w-full max-w-md">
           <Link
             to="/"
-            className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-8 transition-smooth"
+            className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-8 transition-colors duration-200"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Home
           </Link>
 
-          <Card className="shadow-elevated border border-purple-100 bg-white">
+          <Card className="shadow-xl border border-purple-100 bg-white">
             <CardHeader className="text-center pb-2">
               <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <Shield className="w-8 h-8 text-white" />
@@ -219,7 +219,7 @@ export default function AdminAuth() {
                 >
                   {isLoading ? (
                     <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
                       Authenticating...
                     </>
                   ) : (
@@ -231,10 +231,10 @@ export default function AdminAuth() {
                 </Button>
               </form>
 
-              <div className="mt-6 pt-4 border-t border-[hsl(220,20%,20%)]">
-                <p className="text-xs text-center text-[hsl(220,15%,50%)]">
+              <div className="mt-6 pt-4 border-t border-gray-200">
+                <p className="text-xs text-center text-gray-600">
                   Are you a student?{" "}
-                  <Link to="/student-auth" className="text-primary font-medium hover:underline">
+                  <Link to="/student-auth" className="text-purple-600 font-medium hover:underline">
                     Student Portal
                   </Link>
                 </p>
@@ -242,73 +242,12 @@ export default function AdminAuth() {
             </CardContent>
           </Card>
 
-          <div className="mt-8 p-4 rounded-lg border border-[hsl(220,20%,18%)] bg-[hsl(220,20%,12%)]">
-            <p className="text-xs text-center text-[hsl(220,15%,50%)]">
+          <div className="mt-6 p-4 rounded-lg border border-purple-100 bg-purple-50/50">
+            <p className="text-xs text-center text-gray-600 flex items-center justify-center">
               <Shield className="w-3 h-3 inline mr-1" />
-              This is a secure portal. Unauthorized access attempts are logged and monitored.
+              Secure portal - Unauthorized access attempts are monitored
             </p>
           </div>
-        </div>
-      </div>
-
-      {/* Right Panel - Features */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[hsl(220,20%,14%)] to-[hsl(220,25%,8%)] p-12 flex-col justify-between relative overflow-hidden border-l border-[hsl(220,20%,18%)]">
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute top-10 right-20 w-32 h-32 border border-secondary rounded-full" />
-          <div className="absolute bottom-20 left-20 w-48 h-48 border border-secondary rounded-full" />
-          <div className="absolute top-1/3 right-1/3 w-24 h-24 border border-secondary rounded-full" />
-        </div>
-
-        <div className="relative z-10">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-12 h-12 rounded-xl bg-secondary/20 flex items-center justify-center backdrop-blur-sm border border-secondary/30">
-              <Shield className="w-7 h-7 text-secondary" />
-            </div>
-            <span className="text-2xl font-bold text-[hsl(220,15%,95%)]">VALL-E-ASSIST</span>
-          </div>
-          <p className="text-[hsl(220,15%,60%)] text-lg">Administrative Control Center</p>
-        </div>
-
-        <div className="relative z-10 space-y-8">
-          <h2 className="text-3xl font-bold text-[hsl(220,15%,95%)] leading-tight">
-            Manage & Monitor<br />University Operations
-          </h2>
-
-          <div className="space-y-6">
-            <div className="flex items-start gap-4">
-              <div className="w-10 h-10 rounded-lg bg-secondary/20 flex items-center justify-center flex-shrink-0 border border-secondary/30">
-                <LayoutDashboard className="w-5 h-5 text-secondary" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-[hsl(220,15%,90%)]">Ticket Management</h3>
-                <p className="text-[hsl(220,15%,55%)] text-sm">Review and resolve student complaints efficiently</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-4">
-              <div className="w-10 h-10 rounded-lg bg-secondary/20 flex items-center justify-center flex-shrink-0 border border-secondary/30">
-                <Users className="w-5 h-5 text-secondary" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-[hsl(220,15%,90%)]">User Oversight</h3>
-                <p className="text-[hsl(220,15%,55%)] text-sm">Monitor student activities and system usage</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-4">
-              <div className="w-10 h-10 rounded-lg bg-secondary/20 flex items-center justify-center flex-shrink-0 border border-secondary/30">
-                <BarChart3 className="w-5 h-5 text-secondary" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-[hsl(220,15%,90%)]">Analytics Dashboard</h3>
-                <p className="text-[hsl(220,15%,55%)] text-sm">Track metrics and generate insightful reports</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="relative z-10">
-          <p className="text-[hsl(220,15%,40%)] text-sm">© 2024 RGUKT RK Valley. Admin Access Only.</p>
         </div>
       </div>
     </div>

@@ -1,119 +1,36 @@
+import { useState, useEffect } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   LayoutDashboard,
-  MessageCircle,
   FileText,
-  TrendingUp,
   Clock,
   CheckCircle,
   AlertCircle,
   XCircle,
   Users,
-  Activity
+  Calendar,
+  Image as ImageIcon
 } from "lucide-react";
+import { getAllComplaintsPublic, type Complaint } from "@/lib/complaints-api";
+import { useAuth } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 
-const stats = [
-  {
-    title: "Total Chats",
-    value: "1,247",
-    change: "+12%",
-    icon: MessageCircle,
-    gradient: "from-purple-500 to-blue-500"
-  },
-  {
-    title: "Active Issues",
-    value: "23",
-    change: "-8%",
-    icon: FileText,
-    gradient: "from-blue-500 to-indigo-500"
-  },
-  {
-    title: "Resolved Today",
-    value: "15",
-    change: "+22%",
-    icon: CheckCircle,
-    gradient: "from-indigo-500 to-purple-500"
-  },
-  {
-    title: "Active Users",
-    value: "342",
-    change: "+5%",
-    icon: Users,
-    gradient: "from-violet-500 to-purple-500"
-  },
-];
-
-const recentActivities = [
-  {
-    id: "ACT-001",
-    title: "New AI Chat Session Started",
-    category: "Activity",
-    status: "Active",
-    priority: "Low",
-    date: "Dec 8, 2024",
-    time: "2:30 PM",
-    description: "User initiated a new conversation with Medha AI assistant.",
-    user: "Student A"
-  },
-  {
-    id: "ACT-002",
-    title: "Blog Article Viewed",
-    category: "Content",
-    status: "Completed",
-    priority: "Low",
-    date: "Dec 8, 2024",
-    time: "1:15 PM",
-    description: "Campus Facilities Guide article was accessed.",
-    user: "Student B"
-  },
-  {
-    id: "ACT-003",
-    title: "Dashboard Accessed",
-    category: "System",
-    status: "Completed",
-    priority: "Low",
-    date: "Dec 7, 2024",
-    time: "11:45 AM",
-    description: "User logged in and viewed dashboard statistics.",
-    user: "Student C"
-  },
-  {
-    id: "ACT-004",
-    title: "Voice Query Processed",
-    category: "AI",
-    status: "Completed",
-    priority: "Medium",
-    date: "Dec 7, 2024",
-    time: "9:00 AM",
-    description: "Voice input query was successfully processed and answered.",
-    user: "Student D"
-  },
-  {
-    id: "ACT-005",
-    title: "Knowledge Base Searched",
-    category: "Search",
-    status: "Completed",
-    priority: "Low",
-    date: "Dec 6, 2024",
-    time: "4:20 PM",
-    description: "User searched for information about campus facilities.",
-    user: "Student E"
-  },
-  {
-    id: "ACT-006",
-    title: "Multilingual Chat Used",
-    category: "AI",
-    status: "Completed",
-    priority: "Medium",
-    date: "Dec 5, 2024",
-    time: "3:10 PM",
-    description: "User successfully used Hindi language support in chat.",
-    user: "Student F"
-  },
-];
+// Static stats that don't change based on complaints
+const staticStats = {
+  totalChats: { value: "1,247", change: "+12%" },
+  activeUsers: { value: "342", change: "+5%" },
+};
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -159,6 +76,149 @@ const getStatusIcon = (status: string) => {
 };
 
 export default function Dashboard() {
+  const { user, isAdmin } = useAuth();
+  const [complaints, setComplaints] = useState<Complaint[]>([]);
+  const [loading, setLoading] = useState(true);
+  
+  // Filter states
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [priorityFilter, setPriorityFilter] = useState<string>("all");
+
+  useEffect(() => {
+    if (user) {
+      console.log('🔍 Dashboard: User detected, loading complaints...');
+      loadComplaintsData();
+    } else {
+      console.log('⚠️ Dashboard: No user detected, skipping complaints load');
+      setLoading(false);
+    }
+  }, [user]);
+
+  const loadComplaintsData = async () => {
+    try {
+      setLoading(true);
+      console.log('🔄 Dashboard: Loading complaints...');
+      console.log('👤 Current user:', user);
+      
+      // Load all complaints for everyone to see (transparency)
+      const complaintsData = await getAllComplaintsPublic();
+      
+      console.log('✅ Dashboard: Received complaints:', complaintsData.length);
+      console.log('📋 Complaints data:', complaintsData);
+      
+      setComplaints(complaintsData);
+      setLoading(false);
+    } catch (error) {
+      console.error('❌ Dashboard: Error loading complaints:', error);
+      setLoading(false);
+    }
+  };
+
+  // Calculate real-time stats from complaints
+  const getStats = () => {
+    const totalComplaints = complaints.length;
+    const activeIssues = complaints.filter(c => c.status === 'open' || c.status === 'in_progress').length;
+    const resolvedComplaints = complaints.filter(c => c.status === 'resolved' || c.status === 'closed').length;
+    
+    // Calculate resolved today
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const resolvedToday = complaints.filter(c => {
+      if (c.resolved_at) {
+        const resolvedDate = new Date(c.resolved_at);
+        resolvedDate.setHours(0, 0, 0, 0);
+        return resolvedDate.getTime() === today.getTime();
+      }
+      return false;
+    }).length;
+
+    return [
+      {
+        title: "Total Complaints",
+        value: totalComplaints.toString(),
+        change: totalComplaints > 0 ? `${totalComplaints} total` : "No data",
+        icon: FileText,
+        gradient: "from-purple-500 to-blue-500"
+      },
+      {
+        title: "Active Issues",
+        value: activeIssues.toString(),
+        change: activeIssues > 0 ? "In Progress" : "All Clear",
+        icon: AlertCircle,
+        gradient: "from-blue-500 to-indigo-500"
+      },
+      {
+        title: "Resolved",
+        value: resolvedComplaints.toString(),
+        change: resolvedToday > 0 ? `${resolvedToday} today` : "None today",
+        icon: CheckCircle,
+        gradient: "from-indigo-500 to-purple-500"
+      },
+      {
+        title: "Active Users",
+        value: staticStats.activeUsers.value,
+        change: staticStats.activeUsers.change,
+        icon: Users,
+        gradient: "from-violet-500 to-purple-500"
+      },
+    ];
+  };
+
+  // Format date for display
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric', 
+      year: 'numeric' 
+    });
+  };
+
+  // Filter complaints based on selected filters
+  const getFilteredComplaints = () => {
+    return complaints.filter(complaint => {
+      const matchesStatus = statusFilter === "all" || complaint.status === statusFilter;
+      const matchesCategory = categoryFilter === "all" || complaint.category === categoryFilter;
+      const matchesPriority = priorityFilter === "all" || complaint.priority === priorityFilter;
+      
+      return matchesStatus && matchesCategory && matchesPriority;
+    });
+  };
+
+  const filteredComplaints = getFilteredComplaints();
+
+  // Show login prompt if user is not authenticated
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 flex flex-col">
+        <Navbar />
+        <main className="flex-1 flex items-center justify-center px-4">
+          <Card className="max-w-md w-full bg-white border-purple-100 shadow-lg">
+            <CardContent className="pt-8 text-center">
+              <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <LayoutDashboard className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-3">
+                Authentication Required
+              </h2>
+              <p className="text-gray-600 mb-6">
+                Please sign in to access the dashboard
+              </p>
+              <Button 
+                onClick={() => window.location.href = '/student-auth'}
+                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+              >
+                Sign In
+              </Button>
+            </CardContent>
+          </Card>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50">
       <Navbar />
@@ -169,20 +229,25 @@ export default function Dashboard() {
           <div className="mb-8">
             <div className="inline-flex items-center gap-2 bg-purple-100 text-purple-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
               <LayoutDashboard className="w-4 h-4" />
-              Admin Dashboard
+              {isAdmin ? 'Admin Dashboard' : 'Student Dashboard'}
             </div>
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2">
               Dashboard
             </h1>
             <p className="text-lg text-gray-600">
-              Monitor complaints, track statistics, and manage campus issues
+              {isAdmin 
+                ? 'Monitor all complaints, track statistics, and manage campus issues' 
+                : 'View all campus complaints, track statistics, and see what issues are being reported'}
             </p>
           </div>
 
           {/* Stats Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {stats.map((stat, index) => {
+            {getStats().map((stat, index) => {
               const Icon = stat.icon;
+              const isPositive = stat.change.includes('+') || stat.change.includes('total') || stat.change.includes('today');
+              const isNeutral = stat.change.includes('No data') || stat.change.includes('None') || stat.change.includes('All Clear');
+              
               return (
                 <Card
                   key={stat.title}
@@ -194,7 +259,7 @@ export default function Dashboard() {
                       <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.gradient} flex items-center justify-center`}>
                         <Icon className="w-6 h-6 text-white" />
                       </div>
-                      <Badge className={`${stat.change.startsWith('+') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                      <Badge className={`${isPositive ? 'bg-green-100 text-green-700' : isNeutral ? 'bg-gray-100 text-gray-700' : 'bg-blue-100 text-blue-700'}`}>
                         {stat.change}
                       </Badge>
                     </div>
@@ -208,91 +273,173 @@ export default function Dashboard() {
             })}
           </div>
 
-          {/* Recent Activity Section */}
-          <Card className="border-purple-100 shadow-lg animate-slide-up animation-delay-400">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-2xl text-gray-900 flex items-center gap-2">
-                    <Activity className="w-6 h-6 text-purple-600" />
-                    Recent Activity
-                  </CardTitle>
-                  <CardDescription className="mt-2">
-                    Monitor platform usage and user interactions
-                  </CardDescription>
+          {/* Complaints Section - Hidden for Admin */}
+          {!isAdmin && (
+            <Card className="border-purple-100 shadow-lg animate-slide-up animation-delay-400">
+              <CardHeader>
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <CardTitle className="text-2xl text-gray-900 flex items-center gap-2">
+                      <FileText className="w-6 h-6 text-purple-600" />
+                      All Campus Complaints
+                    </CardTitle>
+                    <CardDescription className="mt-2">
+                      View all complaints submitted by students across the campus
+                    </CardDescription>
+                  </div>
+                  <Badge className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-2">
+                    <FileText className="w-4 h-4 mr-2" />
+                    {filteredComplaints.length} of {complaints.length}
+                  </Badge>
                 </div>
-                <Badge className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-2">
-                  <Activity className="w-4 h-4 mr-2" />
-                  Live Updates
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {recentActivities.map((activity, index) => {
-                  const StatusIcon = getStatusIcon(activity.status);
-                  return (
-                    <div
-                      key={activity.id}
-                      className="p-6 border-2 border-purple-100 rounded-xl hover:border-purple-300 hover:shadow-md transition-all duration-300 bg-white/50 backdrop-blur-sm animate-slide-up"
-                      style={{ animationDelay: `${(index + 5) * 100}ms` }}
-                    >
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-2">
-                            <Badge className="bg-purple-100 text-purple-700 font-mono">
-                              {activity.id}
-                            </Badge>
-                            <Badge className={getStatusColor(activity.status) + " border"}>
-                              <StatusIcon className="w-3 h-3 mr-1" />
-                              {activity.status}
-                            </Badge>
-                            <Badge className={getPriorityColor(activity.priority)}>
-                              {activity.priority}
-                            </Badge>
-                          </div>
-                          <h3 className="text-lg font-bold text-gray-900 mb-2">
-                            {activity.title}
-                          </h3>
-                          <p className="text-sm text-gray-600 mb-3">
-                            {activity.description}
-                          </p>
-                          <div className="flex items-center gap-4 text-xs text-gray-500">
-                            <span className="flex items-center gap-1">
-                              <Users className="w-3 h-3" />
-                              {activity.user}
-                            </span>
-                            <span>•</span>
-                            <span className="font-medium">{activity.category}</span>
-                            <span>•</span>
-                            <span>{activity.date} at {activity.time}</span>
+
+                {/* Filter Section */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-purple-100">
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-gray-700">Status</Label>
+                    <Select value={statusFilter} onValueChange={setStatusFilter}>
+                      <SelectTrigger className="bg-white border-purple-200 focus:border-purple-500">
+                        <SelectValue placeholder="All Statuses" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white">
+                        <SelectItem value="all">All Statuses</SelectItem>
+                        <SelectItem value="open">🔴 Open</SelectItem>
+                        <SelectItem value="in_progress">🟡 In Progress</SelectItem>
+                        <SelectItem value="resolved">🟢 Resolved</SelectItem>
+                        <SelectItem value="closed">⚫ Closed</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-gray-700">Category</Label>
+                    <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                      <SelectTrigger className="bg-white border-purple-200 focus:border-purple-500">
+                        <SelectValue placeholder="All Categories" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white">
+                        <SelectItem value="all">All Categories</SelectItem>
+                        <SelectItem value="infrastructure">🏗️ Infrastructure</SelectItem>
+                        <SelectItem value="academic">📚 Academic</SelectItem>
+                        <SelectItem value="hostel">🏠 Hostel</SelectItem>
+                        <SelectItem value="mess">🍽️ Mess</SelectItem>
+                        <SelectItem value="transport">🚌 Transport</SelectItem>
+                        <SelectItem value="other">📋 Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-gray-700">Priority</Label>
+                    <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+                      <SelectTrigger className="bg-white border-purple-200 focus:border-purple-500">
+                        <SelectValue placeholder="All Priorities" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white">
+                        <SelectItem value="all">All Priorities</SelectItem>
+                        <SelectItem value="low">🟢 Low</SelectItem>
+                        <SelectItem value="medium">🟡 Medium</SelectItem>
+                        <SelectItem value="high">🔴 High</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {loading ? (
+                  <div className="text-center py-12">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+                    <p className="text-gray-600">Loading complaints...</p>
+                  </div>
+                ) : filteredComplaints.length === 0 ? (
+                  <div className="text-center py-12">
+                    <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                    <p className="text-gray-600 mb-2">
+                      {complaints.length === 0 ? 'No complaints submitted yet' : 'No complaints match your filters'}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {complaints.length === 0 ? 'Submit a complaint to get started' : 'Try adjusting the filters above'}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {filteredComplaints.map((complaint, index) => {
+                      const StatusIcon = getStatusIcon(complaint.status === 'open' ? 'Open' : complaint.status === 'in_progress' ? 'In Progress' : complaint.status === 'resolved' ? 'Resolved' : 'Closed');
+                      const statusLabel = complaint.status === 'open' ? 'Open' : complaint.status === 'in_progress' ? 'In Progress' : complaint.status === 'resolved' ? 'Resolved' : 'Closed';
+                      const priorityLabel = complaint.priority.charAt(0).toUpperCase() + complaint.priority.slice(1);
+                      
+                      return (
+                        <div
+                          key={complaint.id}
+                          className="p-6 border-2 border-purple-100 rounded-xl hover:border-purple-300 hover:shadow-md transition-all duration-300 bg-white/50 backdrop-blur-sm animate-slide-up"
+                          style={{ animationDelay: `${(index + 5) * 100}ms` }}
+                        >
+                          <div className="flex items-start justify-between mb-4">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-3 mb-2">
+                                <Badge className="bg-purple-100 text-purple-700 font-mono">
+                                  {complaint.id}
+                                </Badge>
+                                <Badge className={getStatusColor(statusLabel) + " border"}>
+                                  <StatusIcon className="w-3 h-3 mr-1" />
+                                  {statusLabel}
+                                </Badge>
+                                <Badge className={getPriorityColor(priorityLabel)}>
+                                  {priorityLabel}
+                                </Badge>
+                              </div>
+                              <h3 className="text-lg font-bold text-gray-900 mb-2">
+                                {complaint.title}
+                              </h3>
+                              <p className="text-sm text-gray-600 mb-3">
+                                {complaint.description}
+                              </p>
+                              <div className="flex items-center gap-4 text-xs text-gray-500">
+                                <span className="flex items-center gap-1">
+                                  <Calendar className="w-3 h-3" />
+                                  Submitted: {formatDate(complaint.created_at)}
+                                </span>
+                                <span>•</span>
+                                <span className="font-medium capitalize">{complaint.category}</span>
+                              </div>
+
+                              {/* Display complaint image if available */}
+                              {complaint.attachment_data && (
+                                <div className="mt-3">
+                                  <p className="text-xs font-medium text-gray-700 mb-2 flex items-center gap-1">
+                                    <ImageIcon className="w-3 h-3" /> Attached Image:
+                                  </p>
+                                  <div className="relative group">
+                                    <img
+                                      src={complaint.attachment_data}
+                                      alt={complaint.attachment_name || "Complaint attachment"}
+                                      className="w-full max-w-md h-auto rounded-lg border-2 border-purple-200 shadow-md hover:shadow-lg transition-shadow cursor-pointer"
+                                      onClick={() => window.open(complaint.attachment_data, '_blank')}
+                                    />
+                                    <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity rounded-lg pointer-events-none"></div>
+                                  </div>
+                                  {complaint.attachment_name && (
+                                    <p className="text-xs text-gray-500 mt-1">📎 {complaint.attachment_name}</p>
+                                  )}
+                                </div>
+                              )}
+
+                              {complaint.admin_response && (
+                                <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                  <p className="text-xs font-semibold text-blue-700 mb-1">✅ Admin Response:</p>
+                                  <p className="text-sm text-blue-900">{complaint.admin_response}</p>
+                                </div>
+                              )}
+                            </div>
                           </div>
                         </div>
-                        <button className="px-4 py-2 text-sm border-2 border-purple-200 text-purple-700 rounded-lg hover:bg-purple-50 transition-colors">
-                          View Details
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* Pagination */}
-              <div className="flex items-center justify-between mt-6 pt-6 border-t border-purple-100">
-                <p className="text-sm text-gray-600">
-                  Showing 6 recent activities
-                </p>
-                <div className="flex gap-2">
-                  <button className="px-4 py-2 border-2 border-purple-200 text-purple-700 rounded-lg hover:bg-purple-50 transition-colors">
-                    Previous
-                  </button>
-                  <button className="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all">
-                    Next
-                  </button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+                      );
+                    })}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
         </div>
       </main>
 

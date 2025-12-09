@@ -24,6 +24,7 @@ export function ChatMessage({ role, content, image, isLoading }: ChatMessageProp
           startOnLoad: false,
           theme: 'default',
           securityLevel: 'loose',
+          logLevel: 'error',
           themeVariables: {
             primaryColor: '#8b5cf6',
             primaryTextColor: '#1f2937',
@@ -35,24 +36,37 @@ export function ChatMessage({ role, content, image, isLoading }: ChatMessageProp
         });
 
         // Find all mermaid code blocks
-        const mermaidBlocks = messageRef.current.querySelectorAll('.mermaid-diagram');
+        const mermaidBlocks = messageRef.current.querySelectorAll('.mermaid-diagram:not(.rendered)');
         
         mermaidBlocks.forEach(async (block, index) => {
           const code = block.textContent || '';
           if (code.trim()) {
             try {
+              // Validate the diagram syntax before rendering
+              const trimmedCode = code.trim();
+              
+              // Check if it's a valid mermaid diagram type
+              const validTypes = ['graph', 'flowchart', 'sequenceDiagram', 'classDiagram', 'stateDiagram', 'erDiagram', 'journey', 'gantt', 'pie', 'gitGraph', 'mindmap', 'timeline'];
+              const isValidDiagram = validTypes.some(type => trimmedCode.startsWith(type));
+              
+              if (!isValidDiagram) {
+                throw new Error('Invalid diagram type');
+              }
+              
               const elementId = `mermaid-${Date.now()}-${index}`;
-              const { svg } = await mermaid.render(elementId, code.trim());
+              const { svg } = await mermaid.render(elementId, trimmedCode);
               block.innerHTML = svg;
               block.classList.add('rendered');
             } catch (error) {
               console.error('Mermaid render error:', error);
+              // Show code as fallback instead of error message
               block.innerHTML = `
-                <div class="p-4 bg-red-50 border-2 border-red-200 rounded-lg text-red-700">
-                  <p class="font-semibold mb-1">⚠️ Diagram Rendering Error</p>
-                  <p class="text-sm">Unable to render the diagram. The diagram syntax may be incorrect.</p>
+                <div class="p-4 bg-gray-50 border-2 border-gray-200 rounded-lg">
+                  <p class="text-xs text-gray-500 mb-2 font-semibold">Diagram Code:</p>
+                  <pre class="text-xs text-gray-700 font-mono whitespace-pre-wrap">${code.trim()}</pre>
                 </div>
               `;
+              block.classList.add('rendered');
             }
           }
         });

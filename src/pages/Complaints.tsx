@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -31,18 +31,9 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
+import { submitComplaint, getUserComplaints, type Complaint } from "@/lib/complaints-api";
 
-interface Complaint {
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  priority: "low" | "medium" | "high";
-  status: "open" | "in_progress" | "resolved" | "closed";
-  created_at: string;
-  updated_at: string;
-  admin_response?: string;
-}
+
 
 const statusConfig = {
   open: { label: "Open", color: "bg-blue-500/10 text-blue-600 border-blue-500/20", icon: AlertCircle },
@@ -58,7 +49,7 @@ const priorityConfig = {
 };
 
 export default function Complaints() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, isAdmin, loading: authLoading } = useAuth();
   const [activeTab, setActiveTab] = useState("submit");
   
   // Form state
@@ -71,6 +62,22 @@ export default function Complaints() {
   
   const [submitting, setSubmitting] = useState(false);
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+  const [complaints, setComplaints] = useState<Complaint[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Load user complaints on mount and when user changes
+  useEffect(() => {
+    if (user) {
+      loadComplaints();
+    }
+  }, [user]);
+
+  const loadComplaints = async () => {
+    setLoading(true);
+    const userComplaints = await getUserComplaints();
+    setComplaints(userComplaints);
+    setLoading(false);
+  };
   
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -92,31 +99,6 @@ export default function Complaints() {
   const removeImage = (index: number) => {
     setUploadedImages(prev => prev.filter((_, i) => i !== index));
   };
-  
-  // Mock complaints data
-  const [complaints] = useState<Complaint[]>([
-    {
-      id: "CMP-001",
-      title: "Hostel WiFi Issues",
-      description: "The WiFi connection in Block A hostel is very unstable. It keeps disconnecting every few minutes.",
-      category: "infrastructure",
-      priority: "medium",
-      status: "open",
-      created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-      updated_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-    },
-    {
-      id: "CMP-002",
-      title: "Lab Equipment Not Working",
-      description: "Several computers in the Computer Science lab are not functioning properly.",
-      category: "academic",
-      priority: "high",
-      status: "in_progress",
-      admin_response: "We are working on fixing the computers. Should be resolved by next week.",
-      created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-      updated_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-    },
-  ]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -128,24 +110,39 @@ export default function Complaints() {
 
     setSubmitting(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      toast.success("Complaint submitted successfully!", {
-        description: "We'll review your complaint and get back to you soon."
-      });
+    try {
+      const complaintData = {
+        title: formData.title,
+        description: formData.description,
+        category: formData.category,
+        priority: formData.priority,
+        attachment_data: uploadedImages.length > 0 ? uploadedImages[0] : undefined,
+        attachment_name: uploadedImages.length > 0 ? "complaint-image.jpg" : undefined,
+      };
+
+      const result = await submitComplaint(complaintData);
       
-      // Reset form
-      setFormData({
-        title: "",
-        description: "",
-        category: "",
-        priority: "medium",
-      });
-      setUploadedImages([]);
-      
+      if (result) {
+        // Reset form
+        setFormData({
+          title: "",
+          description: "",
+          category: "",
+          priority: "medium",
+        });
+        setUploadedImages([]);
+        
+        // Reload complaints to show the new one
+        await loadComplaints();
+        
+        // Switch to list tab to show the new complaint
+        setActiveTab("list");
+      }
+    } catch (error) {
+      console.error("Error submitting complaint:", error);
+    } finally {
       setSubmitting(false);
-      setActiveTab("list");
-    }, 1000);
+    }
   };
 
   const formatDate = (dateString: string) => {
@@ -162,6 +159,37 @@ export default function Complaints() {
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
             <p className="text-gray-600">Loading...</p>
           </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  // Redirect admin to dashboard (admins shouldn't access complaints page)
+  if (user && isAdmin) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 flex flex-col">
+        <Navbar />
+        <main className="flex-1 flex items-center justify-center px-4">
+          <Card className="max-w-md w-full shadow-xl bg-white border-purple-100">
+            <CardContent className="pt-8 pb-8 text-center">
+              <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <FileText className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                Admin Access Restricted
+              </h2>
+              <p className="text-gray-600 mb-6">
+                Admins cannot submit complaints. Please use the dashboard to manage existing complaints.
+              </p>
+              <Button 
+                onClick={() => window.location.href = '/dashboard'}
+                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+              >
+                Go to Dashboard
+              </Button>
+            </CardContent>
+          </Card>
         </main>
         <Footer />
       </div>
@@ -443,6 +471,28 @@ export default function Complaints() {
                                   ID: {complaint.id}
                                 </div>
                               </div>
+
+                              {/* Display complaint image if available */}
+                              {complaint.attachment_data && (
+                                <div className="mt-4">
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <ImageIcon className="w-4 h-4 text-purple-600" />
+                                    <p className="text-xs font-medium text-gray-700">Attached Image:</p>
+                                  </div>
+                                  <div className="relative group">
+                                    <img
+                                      src={complaint.attachment_data}
+                                      alt={complaint.attachment_name || "Complaint attachment"}
+                                      className="w-full max-w-md h-auto rounded-lg border-2 border-purple-200 shadow-md hover:shadow-lg transition-shadow cursor-pointer"
+                                      onClick={() => window.open(complaint.attachment_data, '_blank')}
+                                    />
+                                    <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity rounded-lg pointer-events-none"></div>
+                                  </div>
+                                  {complaint.attachment_name && (
+                                    <p className="text-xs text-gray-500 mt-1">📎 {complaint.attachment_name}</p>
+                                  )}
+                                </div>
+                              )}
                             </div>
                           </div>
 
